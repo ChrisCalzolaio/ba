@@ -5,7 +5,9 @@ function [vertices] = rectangleVert(extension,coordinateSystem)
 %   - abfangen Dimension des Ausdehnungsarrays (Matrix oder Vektor)
 %   - Erkennen der Dimension des Körpers (2D oder 3D);
 %   - Vorsehen eines eignen Koordinatensystems, ausgabe der vertices in
-%   abhängigkeit davon
+%   abhängigkeit davon -> so funktioniert es ja effektiv schon. Die
+%   verschiebung der Vertices innnerhalb des globalen Koordsys ist an der
+%   Steller hier wahrscheinlich nicht sinnvoll
 dim = 2;                    % dimension hart auf 2D
 coordOffs = eye(dim+1);     % transformation matrix
 switch coordinateSystem
