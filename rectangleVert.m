@@ -9,6 +9,7 @@ function [vertices] = rectangleVert(extension,coordinateSystem)
 %   verschiebung der Vertices innnerhalb des globalen Koordsys ist an der
 %   Steller hier wahrscheinlich nicht sinnvoll
 dim = 2;                    % dimension hart auf 2D
+extension = extension(1:2); % dito
 coordOffs = eye(dim+1);     % transformation matrix
 switch coordinateSystem
     case 'lowerleft'
