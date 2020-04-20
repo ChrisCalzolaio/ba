@@ -1,3 +1,6 @@
+recfull = true;
+outputv = true;
+
 % if ~logical(numel(gcp('nocreate')))
 %     poolH = parpool('local',2);
 % end
@@ -11,8 +14,14 @@ if logical(numel(figH))
 else
     figH = figure();
 end
-figH.WindowStyle = 'docked';
+if recfull
+    figH.WindowStyle = 'modal';
+    figH.WindowState = 'fullscreen';
+else
+    figH.WindowStyle = 'docked';
+end
 
+% create the axes handles
 nSub = 2;
 for SubPlt=1:nSub
     axH(SubPlt) = subplot(1,nSub,SubPlt);
@@ -27,7 +36,7 @@ end
 clearvars SubPlt nSub
 
 %% plot setup
-% SupTitle = sgtitle('simulation');
+SupTitle = sgtitle('simulation');
 
 % initialise the plot with dummy objects (for simplicity we use the first simulation step)
 % this allows us ti only update the data of the plot objects, which is
@@ -48,15 +57,15 @@ ptH3 = patch('Faces',1:length(part(1).pgon.Vertices),...
              'Vertices',part(1).pgon.Vertices,...
              'FaceColor',face.Color,'FaceAlpha',face.alpha);
 
-M = repmat(getframe,numel(part),1);  % grab a dummy frame and preallocate RAM with it
+M = repmat(getframe(figH),numel(part),1);  % grab a dummy frame and preallocate RAM with it
 
 plttime = tic;
 fprintf(1,'[ %s ] starting plotting...\n',datestr(now,'HH:mm:SS'));
 for step=1:numel(part)
     stepdur = tic;
-%     SupTitle.String = sprintf('step % .4i',step);
-    sgtitle(sprintf('step % .4i',step))
-    xpos = part(step).pos(3);
+    SupTitle.String = sprintf(['Cutting Simulation step % 2.4i\n',...
+                            'xpos=%.3f mm and rota=%2.3f°'],step,sim.logt{step,{'xpos','rota'}});
+    
     
     % subplot links
     ptH1.Faces = 1:length(mat.pgon.Vertices);
@@ -69,8 +78,25 @@ for step=1:numel(part)
     ptH3.Faces = 1:length(part(step).pgon.Vertices);
     ptH3.Vertices = part(step).pgon.Vertices;
 %     drawnow;
-    M(step) = getframe;
-    fprintf(1,'[ %s ] plotting step % i @ xpos=%.3f mm took %.3f sec.\n',datestr(now,'HH:mm:SS'),step,xpos,toc(stepdur));
+    M(step) = getframe(figH);
+    fprintf(1,'[ %s ] plotting step %i @ xpos=%.4f mm took %.3f sec.\n',datestr(now,'HH:mm:SS'),step,sim.logt{step,{'xpos'}},toc(stepdur));
 end
 fprintf(1,'[ %s ] finished plotting, took %.3f secs.\n',datestr(now,'HH:mm:SS'),toc(plttime))
 clearvars plttime step
+
+if recfull
+    figH.WindowState = 'normal';
+    figH.WindowStyle = 'docked';
+end
+if outputv
+    io.name = 'newfile';
+    io.path = 'D:\temp\exports\';
+    io.ff = fullfile(io.path,io.name);
+    
+    v = VideoWriter(io.ff);
+    v.FrameRate = 90;
+    
+    open(v)
+    writeVideo(v,M)         % Write the matrix of data M to the video file.
+    close(v)                % Close the file.
+end
