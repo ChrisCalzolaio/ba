@@ -28,17 +28,18 @@ fprintf(1,'[ %s ] Simulation setup.\n',datestr(now,'HH:mm:SS'));
 sim.stepsize.x = mat.od(3)/sim.steps;
 sim.stepsize.rot = sim.rotation/sim.steps;
 % preallocation of RAM
-part = repmat(mat,sim.steps,1);                                     % the part, the result of the cutting operation
+part     = repmat(mat,  (sim.steps +1),1);                                  % the part, the result of the cutting operation
+toolpath = repmat(blade,(sim.steps +1),1);
 fprintf(1,'[ %s ] starting simulation...\n',datestr(now,'HH:mm:SS'));
 simtime = tic;
 for step=1:(sim.steps + 1)
     xpos = (step-1) * sim.stepsize.x;
     rota = (step-1) * sim.stepsize.rot;
-    curblade = blade.pgon.rotate(rota,blade.pos(2:3));
+    toolpath(step).pgon = blade.pgon.rotate(rota,blade.pos(2:3));
        
     stepdur = tic;
     
-    part(step).pgon = mat.pgon.subtract(curblade);
+    part(step).pgon = mat.pgon.subtract(toolpath(step).pgon);
     part(step).pos(3) = xpos;
     
     fprintf(1,'[ %s ] step %i @ xpos=%.3f mm and rota=%.3f° took %.4e sec.\n',datestr(now,'HH:mm:SS'),step,xpos,rota,toc(stepdur));
