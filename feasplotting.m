@@ -1,5 +1,5 @@
-recfull = true;
-outputv = true;
+recfull = false;
+outputv = false;
 
 % if ~logical(numel(gcp('nocreate')))
 %     poolH = parpool('local',2);

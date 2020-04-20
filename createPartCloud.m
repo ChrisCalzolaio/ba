@@ -6,10 +6,14 @@ if logical(numel(figHtemp))
     for fig=1:numel(figHtemp)
         map = [map;fig figHtemp(fig).Number];
     end
-    [~,map] = sort(map(:,2));
-    for fig=numfigs:-1:1
+    [~,map] = sort(map(:,2),'descend');
+    for fig=1:numel(figHtemp)
         figH(fig) = figHtemp(map(fig));
         set(0,'CurrentFigure',figH(fig));clf;
+    end
+    for fig=fig:numfigs-numel(figHtemp)
+        figH(fig+1) = figure();
+        drawnow
     end
     delete(figHtemp(numfigs+1:end))
     clearvars figHtemp map
