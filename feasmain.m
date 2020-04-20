@@ -25,27 +25,32 @@ blade.pgon = polyshape(blade.global.vertices);
 
 %% simulation
 fprintf(1,'[ %s ] Simulation setup.\n',datestr(now,'HH:mm:SS'));
+% calculate step sizes
 sim.stepsize.x = mat.od(3)/sim.steps;
 sim.stepsize.rot = sim.rotation/sim.steps;
 % preallocation of RAM
 part     = repmat(mat,  (sim.steps +1),1);                                  % the part, the result of the cutting operation
 toolpath = repmat(blade,(sim.steps +1),1);
-fprintf(1,'[ %s ] starting simulation...\n',datestr(now,'HH:mm:SS'));
+
 simtime = tic;
 for step=1:(sim.steps + 1)
+    stepdur = tic;
     xpos = (step-1) * sim.stepsize.x;
     rota = (step-1) * sim.stepsize.rot;
     toolpath(step).pgon = blade.pgon.rotate(rota,blade.pos(2:3));
-       
-    stepdur = tic;
-    
+
     part(step).pgon = mat.pgon.subtract(toolpath(step).pgon);
     part(step).pos(3) = xpos;
     
-    fprintf(1,'[ %s ] step %i @ xpos=%.3f mm and rota=%.3f° took %.4e sec.\n',datestr(now,'HH:mm:SS'),step,xpos,rota,toc(stepdur));
+    if ~logical(mod(step-1,10))
+        fprintf(1,'[ %s ] step %i @ xpos=%.3f mm and rota=%.3f° took %.4e sec.\n',datestr(now,'HH:mm:SS'),step,xpos,rota,toc(stepdur));
+    end
     sim.logt{step,:} = [step,xpos,rota,toc(stepdur)];
-end
+end; clearvars xpos rota stepdur step;
+
 fprintf(1,['[ %s ] finished Simulation.\n', ...
            '\t\t\t%i steps took %.3f sec.\n', ...
            '\t\t\tsingle step cummulative time was %.3f sec.\n'],....
            datestr(now,'HH:mm:SS'),step,toc(simtime),sum(sim.logt.step_exec_time));
+
+clearvars simtime;
