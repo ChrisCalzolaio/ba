@@ -1,35 +1,7 @@
-numfigs = 3;
+figH = getFigH(3,'WindowStyle','docked');
 
-figHtemp = findobj('type','figure');
-if logical(numel(figHtemp))
-    map = [];
-    for fig=1:numel(figHtemp)
-        map(fig) = figHtemp(fig).Number;
-    end
-%     [~,map] = sort(map(:,2),'descend');
-    for fig=1:numel(figHtemp)
-        figH(fig) = figHtemp(map(fig));
-        set(0,'CurrentFigure',figH(fig));clf;
-    end
-    for fig=fig:numfigs-numel(figHtemp)
-        figH(fig+1) = figure();
-        drawnow
-    end
-    delete(figHtemp(numfigs+1:end))
-    clearvars figHtemp map
-else
-    for fig=1:numfigs
-        figH(fig) = figure();
-        drawnow();
-    end
-end
-for fig=1:numel(figH)
-    figH(fig).WindowStyle = 'docked';
-end
-clearvars fig numfigs
-
+%% read results
 ptCloud = [];
-
 readtime = tic;
 for step=1:numel(part)
     if ~logical(mod(step-1,10))
