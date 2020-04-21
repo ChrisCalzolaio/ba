@@ -61,7 +61,3 @@ figH(2).Name = 'Cloud after rounding';
 pcH = pcshow(ptCloud);
 pcH = pcH.Children;
 topPtH(2) = line(ptCloud(top,1),ptCloud(top,2),ptCloud(top,3),'LineStyle','none','Marker','.','Color','r');
-
- aShp = alphaShape(ptCloud(top,1),ptCloud(top,2));
- set(0,'CurrentFigure',figH(3))
- aPlt = triplot(aShp.alphaTriangulation,aShp.Points);
