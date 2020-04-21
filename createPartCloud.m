@@ -4,9 +4,9 @@ figHtemp = findobj('type','figure');
 if logical(numel(figHtemp))
     map = [];
     for fig=1:numel(figHtemp)
-        map = [map;fig figHtemp(fig).Number];
+        map(fig) = figHtemp(fig).Number;
     end
-    [~,map] = sort(map(:,2),'descend');
+%     [~,map] = sort(map(:,2),'descend');
     for fig=1:numel(figHtemp)
         figH(fig) = figHtemp(map(fig));
         set(0,'CurrentFigure',figH(fig));clf;
