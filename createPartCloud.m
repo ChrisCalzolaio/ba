@@ -1,4 +1,4 @@
-figH = getFigH(3,'WindowStyle','docked');
+figH = getFigH(3,'WindowStyle','docked','Color','default');
 
 %% read results
 ptCloud = [];
