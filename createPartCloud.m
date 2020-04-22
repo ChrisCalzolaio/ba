@@ -13,7 +13,7 @@ fprintf(1,'[ %s ] finished reading the results, took %.3f secs.\n',datestr(now,'
 clearvars readtime step
 
 %% plotting
-set(0,'CurrentFigure',figH(1))
+set(0,'CurrentFigure',figH(1));
 figH(1).Name = 'Cloud before rounding';
 pcH = pcshow(ptCloud);
 scH = findobj('type','scatter');
@@ -22,7 +22,7 @@ topPtH(1) = line(ptCloud(top,1),ptCloud(top,2),ptCloud(top,3),'LineStyle','none'
 % findobj('type','datatip');
 % ptCloud(dtH.DataIndex,:)
 dtH = datatip(scH(1),'DataIndex',574);
-ptCloud(dtH.DataIndex,:)
+ptCloud(dtH.DataIndex,:);                   % ToDO: why were there inaccuricies possible with fewer points?
 drawnow();
 
 %% creating the mesh
@@ -33,3 +33,7 @@ figH(2).Name = 'Cloud after rounding';
 pcH = pcshow(ptCloud);
 pcH = pcH.Children;
 topPtH(2) = line(ptCloud(top,1),ptCloud(top,2),ptCloud(top,3),'LineStyle','none','Marker','.','Color','r');
+clearvars top
+
+%% cleanup
+clearvars pcH topPtH scH dtH figH

@@ -1,5 +1,5 @@
-recfull = 1;
-outputv = 1;
+recfull = 0;
+outputv = 0;
 
 % if ~logical(numel(gcp('nocreate')))
 %     poolH = parpool('local',2);
@@ -46,26 +46,28 @@ SupTitle = sgtitle('simulation');
 % raw material side
 set(figH,'CurrentAxes',axH(1));
 ptH1 = patch('Faces',1:length(mat.pgon.Vertices),...
-             'Vertices',mat.pgon.Vertices,...
-             'FaceColor',face.Color,'FaceAlpha',face.alpha);
+    'Vertices',mat.pgon.Vertices,...
+    'FaceColor',face.Color,'FaceAlpha',face.alpha);
 ptH2 = patch('Faces',1:length(toolpath(1).pgon.Vertices),...
-             'Vertices',toolpath(1).pgon.Vertices,...
-             'FaceColor',mod(face.Color+.5,1),'FaceAlpha',face.alpha);
+    'Vertices',toolpath(1).pgon.Vertices,...
+    'FaceColor',mod(face.Color+.5,1),'FaceAlpha',face.alpha);
 
 % cut operation result side
 set(figH,'CurrentAxes',axH(2));
 ptH3 = patch('Faces',1:length(part(1).pgon.Vertices),...
-             'Vertices',part(1).pgon.Vertices,...
-             'FaceColor',face.Color,'FaceAlpha',face.alpha);
+    'Vertices',part(1).pgon.Vertices,...
+    'FaceColor',face.Color,'FaceAlpha',face.alpha);
 
-M = repmat(getframe(figH),numel(part),1);  % grab a dummy frame and preallocate RAM with it
+if outputv
+    M = repmat(getframe(figH),numel(part),1);  % grab a dummy frame and preallocate RAM with it
+end
 
 plttime = tic;
 fprintf(1,'[ %s ] starting plotting...\n',datestr(now,'HH:mm:SS'));
 for step=1:numel(part)
     stepdur = tic;
     SupTitle.String = sprintf(['Cutting Simulation step % 2.4i\n',...
-                            'xpos=%.3f mm and rota=%2.3f°'],step,sim.logt{step,{'xpos','rota'}});
+        'xpos=%.3f mm and rota=%2.3f°'],step,sim.logt{step,{'xpos','rota'}});
     
     
     % subplot links
@@ -78,12 +80,25 @@ for step=1:numel(part)
     % subplot rechts
     ptH3.Faces = 1:length(part(step).pgon.Vertices);
     ptH3.Vertices = part(step).pgon.Vertices;
-%     drawnow;
-    M(step) = getframe(figH);
-    fprintf(1,'[ %s ] plotting step %i @ xpos=%.4f mm took %.3f sec.\n',datestr(now,'HH:mm:SS'),step,sim.logt{step,{'xpos'}},toc(stepdur));
+    %     drawnow;
+    if outputv
+        M(step) = getframe(figH);
+    else
+        drawnow();
+    end
+    if ~logical(mod(step-1,10))
+        fprintf(1,'[ %s ] plotting step %i @ xpos=%.4f mm took %.3f sec.\n',...
+            datestr(now,'HH:mm:SS'),...
+            step,...
+            sim.logt{step,{'xpos'}},...
+            toc(stepdur));
+    end
 end
-fprintf(1,'[ %s ] finished plotting, took %.3f secs.\n',datestr(now,'HH:mm:SS'),toc(plttime))
-clearvars plttime step
+fprintf(1,'[ %s ] finished plotting, took %.3f secs.\n',....
+    datestr(now,'HH:mm:SS'),....
+    toc(plttime));
+
+clearvars plttime step ptH1 ptH2 ptH3 SupTitle stepdur
 
 if recfull
     figH.WindowState = 'normal';
@@ -103,6 +118,8 @@ if outputv
     open(v)
     writeVideo(v,M)         % Write the matrix of data M to the video file.
     close(v)                % Close the file.
+    
+    clearvars M;
 end
 
-clearvars M;
+clearvars recfull outputv figH axH face
