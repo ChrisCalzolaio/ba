@@ -1,5 +1,5 @@
-recfull = false;
-outputv = false;
+recfull = 1;
+outputv = 1;
 
 % if ~logical(numel(gcp('nocreate')))
 %     poolH = parpool('local',2);
@@ -7,13 +7,14 @@ outputv = false;
 
 face.Color = [0 0.447 0.741];
 face.alpha = 0.35;
-figH = findobj('type','figure');
-if logical(numel(figH))
-    figH = figH(1);
-    set(0,'CurrentFigure',figH);clf;
-else
-    figH = figure();
-end
+figH = getFigH(1,'Color','default');
+% figH = findobj('type','figure');
+% if logical(numel(figH))
+%     figH = figH(1);
+%     set(0,'CurrentFigure',figH);clf;
+% else
+%     figH = figure();
+% end
 if recfull
     figH.WindowStyle = 'modal';
     figH.WindowState = 'fullscreen';
@@ -89,9 +90,12 @@ if recfull
     figH.WindowStyle = 'docked';
 end
 if outputv
-    io.name = 'newfile';
-    io.path = 'D:\temp\exports\';
+    io.name = strcat(datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_feasplotting_export');
+    io.path = strcat('D:\temp\exports\',datestr(now,'yyyy-mm-dd'));
     io.ff = fullfile(io.path,io.name);
+    if ~exist(io.path,'dir')                    % make directory if it doesn't exist yet
+        mkdir(io.path)
+    end
     
     v = VideoWriter(io.ff);
     v.FrameRate = 90;
@@ -100,3 +104,5 @@ if outputv
     writeVideo(v,M)         % Write the matrix of data M to the video file.
     close(v)                % Close the file.
 end
+
+clearvars M;
