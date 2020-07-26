@@ -1,28 +1,23 @@
 function [R] = vec2rot(a,b)
 %VEC2ROT Rotational transform matrix from basis and projected vector
 %   probably doesn't work
-%   source: https://math.stackexchange.com/questions/180418
-%   since the function relies on trig functions, the numerical accuracy is
-%   not very good
+%   ToDo: find source for this algorithm
 
-% a = a/norm(a);
-% b = b/norm(b);
 dim = length(a);
 
-x = cross(a,b)/norm(cross(a,b));
-theta = vecangle(a,b);
+v = cross(a,b);
+s = abs(sin(norm(v)));
+c = cos(dot(a,b));
 
-R = eye(dim) + sin(theta)*skew(x) + (1 - cos(theta))*skew(x)^2;
+R = eye(dim) + skew(v) + ((1-c)/s^2)*(skew(v)^2);
 
-% if the vectors the function is given are row vectors, we need to return
-% the transformation matrix as type of row
 if isrow(a)
     R = R';
 end
-    function skw = skew(A)
-        skw = [0 -A(3) A(2);...
-               A(3) 0 -A(1);...
-               -A(2) A(1) 0];
+    function skw = skew(v)
+        skw = [0 -v(3) v(2);...
+               v(3) 0 -v(1);...
+               -v(2) v(1) 0];
     end
 end
 
