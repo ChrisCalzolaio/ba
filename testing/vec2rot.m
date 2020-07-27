@@ -6,10 +6,10 @@ function [R] = vec2rot(a,b)
 dim = length(a);
 
 v = cross(a,b);
-s = abs(sin(norm(v)));
-c = cos(dot(a,b));
+s = norm(v);
+c = dot(a,b);
 
-R = eye(dim) + skew(v) + ((1-c)/s^2)*(skew(v)^2);
+R = eye(dim) + skew(v) + ((1)/(1+c))*(skew(v)^2);
 
 if isrow(a)
     R = R';
