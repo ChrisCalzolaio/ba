@@ -6,9 +6,9 @@ FFi = @(A,B) [ A (B-dot(A,B)*A)/norm(B-dot(A,B)*A) cross(B,A) ];
 
 UU = @(Fi,G) Fi*G*inv(Fi);
 
-a=[1 4 0]';
+a=[0 0 1]';
 % a=[1 0 0]';
-b=[-2 5 3]';
+b=[1 1 1]';
 % b=[0 1 0]';
 
 
@@ -39,11 +39,15 @@ U
 fprintf('U * a\n')
 U * a
 
+origin = zeros(3);
+csys = eye(3);
 
 figH = getFigH(1);
-view(3);
-origin = zeros(3);
-csys = ones(3);
+
+% plot vectors
+quiver3simple(zeros(3,1),[a,b]);
+hold on;
+% plot coordinate systems
 pltCSYS(origin,csys,'Color','r')
 csysrot = U * csys;
 pltCSYS(origin,csysrot,'Color','g')
