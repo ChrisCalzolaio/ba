@@ -27,16 +27,23 @@ b = vu(b);
 
 U_old = UU(FFi(a,b), GG(a,b));
 U_new = RU(a,b);
+U_fun = vec2rot(a,b);
 fprintf('[old] Is it length-preserving:\nnorm(U): %d\n',norm(U_old))
 fprintf('[new] Is it length-preserving:\nnorm(U): %d\n',norm(U_new))
+fprintf('[fun] Is it length-preserving:\nnorm(U): %d\n',norm(U_fun))
+
+disp('---------------')
 
 fprintf('[old] Does it rotate a onto b?\nnorm(b-U*a): %d\n',norm(b-U_old*a))
 fprintf('[new] Does it rotate a onto b?\nnorm(b-U*a): %d\n',norm(b-U_new*a))
+fprintf('[fun] Does it rotate a onto b?\nnorm(b-U*a): %d\n',norm(b-U_fun*a))
 
 fprintf('[old] U * a\n')
 c = U_old * a
 fprintf('[new] U * a\n')
 c = U_new * a
+fprintf('[fun] U * a\n')
+c = U_fun * a
 
 origin = zeros(3);
 csys = eye(3);
