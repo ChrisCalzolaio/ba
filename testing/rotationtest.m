@@ -8,6 +8,14 @@ GG = @(A,B) [ dot(A,B) -norm(cross(A,B)) 0;...
 FFi = @(A,B) [ A (B-dot(A,B)*A)/norm(B-dot(A,B)*A) cross(B,A) ];
 UU = @(Fi,G) Fi*G*inv(Fi);
 
+% computationally more efficient
+% skew symmetric crossproduct matrix
+ssc = @(v) [0 -v(3) v(2);...
+            v(3) 0 -v(1);...
+            -v(2) v(1) 0];
+
+RU = @(A,B) eye(3) + ssc(cross(A,B)) + ssc(cross(A,B))^2*(1-dot(A,B))/(norm(cross(A,B))^2)
+
 vu = @(v) v/norm(v);            % function to normalize the vectors
 ru = @() vu(rand(3,1));         % function to create random vectors
 
@@ -18,19 +26,9 @@ a = vu(a);                      % normalize vectors
 b = vu(b);
 
 U = UU(FFi(a,b), GG(a,b));
-disp('is it length-preserving?')
-norm(U)
+fprintf('Is it length-preserving:\nnorm(U): %d\n',norm(U))
 
-disp('does it rotate a onto b?')
-norm(b-U*a)
-
-U = UU(FFi(a,b), GG(a,b));
-fprintf('norm(U): %d\n',norm(U))
-
-fprintf('norm(b-U*a): %d\n',norm(b-U*a))
-
-fprintf('U:\n')
-U
+fprintf('Does it rotate a onto b?\nnorm(b-U*a): %d\n',norm(b-U*a))
 
 fprintf('U * a\n')
 c = U * a
@@ -42,9 +40,9 @@ figH = getFigH(1);
 
 % plot vectors
 quH = quiver3simple(zeros(3,1),[a,b,c]);
-hold on;
+% hold on;
 % plot coordinate systems
 pltCSYS(origin,csys,'Color','r');
-csysrot = U * csys;
+csysrot = csys * U';
 pltCSYS(origin,csysrot,'Color','g');
-hold off;
+% hold off;
