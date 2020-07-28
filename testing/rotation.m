@@ -20,7 +20,7 @@ plot(polyg,'Parent',grp)                            % plot shape
 mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);
 pltCSYS(origin,csys,'Color','r');                   % plot base coordinate system
 
-tmcsys = [csys , [1,1,1]'] * basetm';                   % calculate transformed coordinate system
+tmcsys = dim4(csys,1) * basetm';                   % calculate transformed coordinate system
 tmcsys = tmcsys(:,1:3);                             % lose dispensible 4th dimension
 pltCSYS(origin,tmcsys,'Color','g');                 % plot transformed coordinate system
 % different approach
