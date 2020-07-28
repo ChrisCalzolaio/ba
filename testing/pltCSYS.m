@@ -30,9 +30,10 @@ while true                                      % the parent handle of the line 
 end
 ornt = axH.View;                                % get orientation
 if ~logical(ornt(1))                            % first value is the azimuth
-    set(axH.Parent,'CurrentAxes',axH);          % make target axis current
-    view(3);
-    axis vis3d
+    % selecting the axis using set() doesn't work in this case, thanks
+    % matlab, honestly wtf
+    view(axH,3);
+    axis(axH,'vis3d')
 end
 
 end
