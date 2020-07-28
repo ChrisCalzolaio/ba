@@ -5,13 +5,13 @@ ax.NextPlot = 'add';
 view(3); grid on; axis vis3d; ax.View = [-8.5 57];
 grp = hgtransform('Parent',ax);
 
-rotaxis = [1,0,1];                                  % axis of rotation
+rotaxis = [1,0,1]';                                 % axis of rotation
 origin = zeros(3);                                  % origin-coordinate system as matrix of component vectors
 csys = eye(3);                                      % origin coordinate system as matrix of the vectors
 
 polvert = rectangleVert([2,2],'center',2);          % create polygon vertices
 polyg = polyshape(polvert);                         % create polyshape object
-normal = [0,0,1];                                   % polyshapes default to the xy-plane, so default normal vector is (0,0,1)
+normal = [0,0,1]';                                  % polyshapes default to the xy-plane, so default normal vector is (0,0,1)
 angle = vecangle(rotaxis,normal);                   % calculate angle between default normal vector an rotation axis
 complaxis = cross(rotaxis,normal);                  % complementatary axis to the rotation axis
 basetm = makehgtform('axisrotate',complaxis,-angle); % create the base transformation matrix, so object is perpendicular to rotation axis
