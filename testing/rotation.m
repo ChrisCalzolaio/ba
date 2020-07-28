@@ -5,7 +5,7 @@ ax.NextPlot = 'add';
 view(3); grid on; axis vis3d; ax.View = [-8.5 57];
 grp = hgtransform('Parent',ax);
 
-rotaxis = [1,0,0];                                  % axis of rotation
+rotaxis = [1,0,1];                                  % axis of rotation
 origin = zeros(3);                                  % origin-coordinate system as matrix of component vectors
 csys = eye(3);                                      % origin coordinate system as matrix of the vectors
 
