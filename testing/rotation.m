@@ -20,8 +20,8 @@ plot(polyg,'Parent',grp)                            % plot shape
 mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);
 pltCSYS(origin,csys,'Color','r');                   % plot base coordinate system
 
-tmcsys = basetm' * dim4(csys,1);                   % calculate transformed coordinate system
-tmcsys = tmcsys(:,1:3);                             % lose dispensible 4th dimension
+tmcsys = dim4(basetm' * dim4(csys,1,'forward'),1,'backward');               % calculate transformed coordinate system
+
 pltCSYS(origin,tmcsys,'Color','g');                 % plot transformed coordinate system
 % different approach
 basetm2 = vec2rot(normal,rotaxis);
