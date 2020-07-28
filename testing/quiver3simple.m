@@ -11,5 +11,11 @@ end
 vecH = quiver3(origin(1,:),origin(2,:),origin(3,:),...
                 direction(1,:),direction(2,:),direction(3,:),...
                 varargin{:});
+% add text at the tips of the vectors, if more than one vector is given
+if logical(size(direction,2)-1)
+    for vec=1:size(direction,2)
+        text(direction(1,vec),direction(2,vec),direction(3,vec),num2str(vec),varargin{:});
+    end
+end
 end
 
