@@ -13,7 +13,8 @@ v = cross(a,b);     % crossproduct
 s = norm(v);
 c = dot(a,b);
 % rotation matrix: Rodrigues' rotation formula
-R = eye(3) + skew(v) + skew(v)^2*(1-c)/((s)^2);
+R = eye(dim) + skew(v) + skew(v)^2*(1-c)/((s)^2);
+R = dim4(R,2,'forward');
 
 if isrow(a)
     R = R';
@@ -30,4 +31,3 @@ end
         v = v/norm(v);
     end
 end
-
