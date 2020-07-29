@@ -25,11 +25,11 @@ tmcsys = dim4(basetm' * dim4(csys,1,'forward'),1,'backward');               % ca
 pltCSYS(origin,tmcsys,'Color','g');                 % plot transformed coordinate system
 % different approach
 basetm2 = vec2rot(normal,rotaxis);
-tmcsys2 = csys * basetm2;
+tmcsys2 = csys * basetm2';
 pltCSYS(origin,tmcsys2,'Color','b')
 
-quiver3simple([0,0,0],rotaxis);                     % axis of rotation
-quiver3simple([0,0,0],complaxis);                   % axis of rotation for base transform
+quiver3simple([0,0,0]',rotaxis);                     % axis of rotation
+quiver3simple([0,0,0]',complaxis);                   % axis of rotation for base transform
 
 
 ax.XLim = [-2 2];
