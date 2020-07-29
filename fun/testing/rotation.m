@@ -14,34 +14,24 @@ csys = eye(3);                                      % origin coordinate system a
 polvert = rectangleVert([2,2],'center',2);          % create polygon vertices
 polyg = polyshape(polvert);                         % create polyshape object
 plot(polyg,'Parent',grp)                            % plot shape
-% tm using the inbuilt function
-angle = vecangle(rotaxis,normal);                   % calculate angle between default normal vector an rotation axis
-complaxis = cross(rotaxis,normal);                  % complementatary axis to the rotation axis
-basetm = makehgtform('axisrotate',complaxis,-angle); % create the base transformation matrix, so object is perpendicular to rotation axis
-tmcsys = dim4(basetm' * dim4(csys,1,'forward'),1,'backward');               % calculate transformed coordinate system
 
-pltCSYS(origin,csys,'Color','r');                   % plot base coordinate system
-mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);
-pltCSYS(origin,tmcsys,'Color','g');                 % plot transformed coordinate system
+basetm = vec2rot(normal,rotaxis);                           % create the base transformation matrix, so object is perpendicular to rotation axis
+tmcsys = applytm(csys,basetm);                              % calculate transformed coordinate system
 
-% different approach
-basetm2 = vec2rot(normal,rotaxis);
-tmcsys2 = csys * basetm2';
-pltCSYS(origin,tmcsys2,'Color','b')
+pltCSYS(origin,csys,'Color','r');                           % plot base coordinate system
+mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);    % plot shape fix coordinate system
+pltCSYS(origin,tmcsys,'Color','g');                         % plot transformed coordinate system
 
 quiver3simple([0,0,0]',rotaxis);                     % axis of rotation
-quiver3simple([0,0,0]',complaxis);                   % axis of rotation for base transform
 
-
+% plot setup
 ax.XLim = [-2 2];
-% ax.YLim = ax.XLim; ax.ZLim = ax.XLim;
 ax.XLabel.String = 'x'; ax.YLabel.String = 'y'; ax.ZLabel.String = 'z';
 
 % apply base transformation:
 ax.View = [4.435604837043331e+01, 1.957179526238810e+01];
 stps = 100;
-% basetm = makehgtform('axisrotate',complaxis,-angle);
-basetm_disc = basetm^(1/stps);
+basetm_disc = dim4(basetm^(1/stps),2,'forward');
 for stp=1:stps
     intermat = real(basetm_disc^stp);
     grp.Matrix = intermat;                          % apply transformation matrix
