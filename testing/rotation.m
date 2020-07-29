@@ -20,16 +20,16 @@ plot(polyg,'Parent',grp)                            % plot shape
 mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);
 pltCSYS(origin,csys,'Color','r');                   % plot base coordinate system
 
-tmcsys = [csys , [1,1,1]'] * basetm';                   % calculate transformed coordinate system
-tmcsys = tmcsys(:,1:3);                             % lose dispensible 4th dimension
+tmcsys = dim4(basetm' * dim4(csys,1,'forward'),1,'backward');               % calculate transformed coordinate system
+
 pltCSYS(origin,tmcsys,'Color','g');                 % plot transformed coordinate system
 % different approach
 basetm2 = vec2rot(normal,rotaxis);
-tmcsys2 = csys * basetm2;
+tmcsys2 = csys * basetm2';
 pltCSYS(origin,tmcsys2,'Color','b')
 
-quiver3simple([0,0,0],rotaxis);                     % axis of rotation
-quiver3simple([0,0,0],complaxis);                   % axis of rotation for base transform
+quiver3simple([0,0,0]',rotaxis);                     % axis of rotation
+quiver3simple([0,0,0]',complaxis);                   % axis of rotation for base transform
 
 
 ax.XLim = [-2 2];
