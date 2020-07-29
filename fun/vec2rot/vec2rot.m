@@ -5,6 +5,10 @@ function [R] = vec2rot(a,b)
 
 dim = length(a);
 
+% normalize input vectors
+a = vnorm(a);
+b = vnorm(b);
+
 v = cross(a,b);     % crossproduct
 s = norm(v);
 c = dot(a,b);
@@ -20,6 +24,10 @@ end
         skw = [0   -A(3) A(2);...
                A(3) 0   -A(1);...
               -A(2) A(1) 0];
+    end
+% normalize vectors
+    function v = vnorm(v)
+        v = v/norm(v);
     end
 end
 
