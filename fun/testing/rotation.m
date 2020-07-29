@@ -48,6 +48,7 @@ for stp=1:stps
     drawnow
 end
 
+% rotate shape around normal vector
 tic
 for ang = linspace(0,2*pi,360)
    tm = makehgtform('axisrotate',rotaxis,ang);
