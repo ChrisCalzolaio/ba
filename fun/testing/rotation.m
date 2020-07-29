@@ -6,23 +6,24 @@ view(3); grid on; axis vis3d; ax.View = [-8.5 57];
 grp = hgtransform('Parent',ax);
 
 rotaxis = [1,0,1]';                                 % axis of rotation
+normal = [0,0,1]';                                  % polyshapes default to the xy-plane, so default normal vector is (0,0,1)
+
 origin = zeros(3);                                  % origin-coordinate system as matrix of component vectors
 csys = eye(3);                                      % origin coordinate system as matrix of the vectors
 
 polvert = rectangleVert([2,2],'center',2);          % create polygon vertices
 polyg = polyshape(polvert);                         % create polyshape object
-normal = [0,0,1]';                                  % polyshapes default to the xy-plane, so default normal vector is (0,0,1)
+plot(polyg,'Parent',grp)                            % plot shape
+% tm using the inbuilt function
 angle = vecangle(rotaxis,normal);                   % calculate angle between default normal vector an rotation axis
 complaxis = cross(rotaxis,normal);                  % complementatary axis to the rotation axis
 basetm = makehgtform('axisrotate',complaxis,-angle); % create the base transformation matrix, so object is perpendicular to rotation axis
-
-plot(polyg,'Parent',grp)                            % plot shape
-mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);
-pltCSYS(origin,csys,'Color','r');                   % plot base coordinate system
-
 tmcsys = dim4(basetm' * dim4(csys,1,'forward'),1,'backward');               % calculate transformed coordinate system
 
+pltCSYS(origin,csys,'Color','r');                   % plot base coordinate system
+mobCSYS = pltCSYS(origin,csys,'Color','m','Parent',grp);
 pltCSYS(origin,tmcsys,'Color','g');                 % plot transformed coordinate system
+
 % different approach
 basetm2 = vec2rot(normal,rotaxis);
 tmcsys2 = csys * basetm2';
