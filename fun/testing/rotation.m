@@ -5,7 +5,7 @@ ax.NextPlot = 'add';
 view(3); grid on; axis vis3d; ax.View = [-8.5 57];
 grp = hgtransform('Parent',ax);
 
-rotaxis = [1,0,1]';                                 % axis of rotation
+rotaxis = (-1)*[1,1,1]';                                 % axis of rotation
 normal = [0,0,1]';                                  % polyshapes default to the xy-plane, so default normal vector is (0,0,1)
 
 origin = zeros(3);                                  % origin-coordinate system as matrix of component vectors
@@ -31,9 +31,11 @@ ax.XLabel.String = 'x'; ax.YLabel.String = 'y'; ax.ZLabel.String = 'z';
 % apply base transformation:
 ax.View = [4.435604837043331e+01, 1.957179526238810e+01];
 stps = 100;
-basetm_disc = dim4(basetm^(1/stps),2,'forward');
+basetm_disc = real(dim4(basetm^(1/stps),2,'forward'));
+allmat = repmat(nan(size(basetm_disc)),1,1,stps);
 for stp=1:stps
-    intermat = real(basetm_disc^stp);
+    intermat = basetm_disc^stp;
+    allmat(:,:,stp) = intermat;
     grp.Matrix = intermat;                          % apply transformation matrix
     drawnow
 end
