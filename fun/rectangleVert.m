@@ -1,6 +1,8 @@
 function [vertices] = rectangleVert(extension,coordinateSystem,density)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
+%  Arguments:
+%   - extension: array of spatial exten. of the rectangle: [x,y]
 % ToDo:
 %   - abfangen Dimension des Ausdehnungsarrays (Matrix oder Vektor)
 %   - Erkennen der Dimension des Körpers (2D oder 3D);
@@ -10,12 +12,22 @@ function [vertices] = rectangleVert(extension,coordinateSystem,density)
 %   Steller hier wahrscheinlich nicht sinnvoll
 %   - implementieren von varargin mit sinnvollen default werten
 
+% defaults
+defaultExtension = 1;
+defaultCSYS = 'lowerleft';
+expectedCSYS = {'center','lowerleft'};
+% parse inputs
+p = inputParser;
+validExtension = @(x) isnumeric(x) && all([1,2] > 0);
+addRequired(p,'extension',validExtension);
+
+
 dim = 2;                    % dimension hart auf 2D
 extension = extension(1:2); % dito
 coordOffs = eye(dim+1);     % transformation matrix
 switch coordinateSystem
     case 'lowerleft'
-    case 'center'
+    case {'center','centre'}
         coordOffs(end,1:2) = -(extension./2);
 end
 xvals = linspace(0,extension(1),density)';
