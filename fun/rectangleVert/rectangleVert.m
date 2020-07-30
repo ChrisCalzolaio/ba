@@ -17,6 +17,8 @@ function [vertices] = rectangleVert(varargin)
 % defaults
 defaultCSYS = 'lowerleft';
 expectedCSYS = {'center','centre','c','lowerleft','ll'};
+defaultLoop = 'tight';
+expectedLoop = {'tight','open'};
 defaultDensity = 0;
 % parse inputs
 p = inputParser;
@@ -24,8 +26,9 @@ p = inputParser;
 validExtension = @(x) isnumeric(x) && isvector(x) && all(x > 0);
 validDensity = @(d) isnumeric(d) && isscalar(d);
 addRequired(p,'extension',validExtension);
-addParameter(p,'coordinateSystem',defaultCSYS,@(s) any(validatestring(s,expectedCSYS)))
+addParameter(p,'coordinateSystem',defaultCSYS,@(s) any(validatestring(s,expectedCSYS)));
 addParameter(p,'density',defaultDensity,validDensity);
+addParameter(p,'loop',defaultLoop,@(s) any(validatestring(s,expectedLoop)));
 parse(p,varargin{:});
 
 % "parse" extension
