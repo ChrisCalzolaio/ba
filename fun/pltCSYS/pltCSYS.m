@@ -1,6 +1,27 @@
 function [csysH] = pltCSYS(origin,drct,varargin)
-%csysH = PLTCSYS(origin,direction) plots coordinate system using line
+%  csysH = PLTCSYS(origin,direction) plots coordinate system using line
 
+% validate input
+norgn = size(origin,2);         % number of origin vectors
+ndrct = size(drct,2);           % number of origin vectors
+
+if ndrct < 3                   % check size of matrix of direction vectors
+    error("Not enough direction vectors.")
+elseif ndrct > 3
+	error("Too many direction vectors.")
+end
+
+switch norgn                    % act on dimension of origin matrix
+    case 1                      % origin information we are given is 1d
+        origin = repmat(origin,1,3);
+    case 3                      % origin is matrix of vectors
+        if any(origin(:,1:2) == origin(:,2:3),'all')
+            % only if all vectors are the same, are the first and last two columns identical
+            error('Not all vectors in the matrix are equal.')
+        end
+    otherwise
+        error("Dimensions of origin matrix is incompatible.")
+end
 
 pltarray = reshape([origin(:),drct(:)]',6,3);
 csysH = line(pltarray(:,1),pltarray(:,2),pltarray(:,3),varargin{:});
