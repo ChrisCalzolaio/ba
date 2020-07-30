@@ -13,4 +13,4 @@ bcsys = applytm(eye(3),tm);
 figH = getFigH(1);
 % coordinate systems
 pltCSYS(aorigin,acsys,'Color','b')
-pltCSYS(aorigin,csys,'Color','r')
+pltCSYS(aorigin,bcsys,'Color','r')
