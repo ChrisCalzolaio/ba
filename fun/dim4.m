@@ -14,9 +14,12 @@ function [A] = dim4(A,type,direction)
 
 switch type
     case 1
-        ncols = size(A,2);      % number of column vectors in the matrix of vectors
+        [nrows,ncols] = size(A);      % number of column vectors in the matrix of vectors
         switch direction
             case 'forward'
+                if nrows==2             % if the vector has two rows, its only x,y, add z-value of value 0
+                    A = [A;ones(1,ncols)];
+                end
                 A = [A;ones(1,ncols)];
             case 'backward'
                 A = A(1:3,:);
