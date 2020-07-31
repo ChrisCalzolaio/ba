@@ -18,7 +18,7 @@ switch type
         switch direction
             case 'forward'
                 if nrows==2             % if the vector has two rows, its only x,y, add z-value of value 0
-                    A = [A;zeros(1,ncols)];
+                    A = [A;ones(1,ncols)];
                 end
                 A = [A;ones(1,ncols)];
             case 'backward'

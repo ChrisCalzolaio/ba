@@ -18,7 +18,7 @@ function [vertices] = rectangleVert(varargin)
 % defaults
 defaultCSYS = 'lowerleft';
 expectedCSYS = {'center','centre','c','lowerleft','ll'};
-defaultLoop = 'tight';
+defaultLoop = 'open';
 expectedLoop = {'tight','open'};
 defaultDensity = 0;
 % parse inputs
@@ -69,6 +69,8 @@ vertices =[[xvals;zeros(1,density)],...
            [fliplr(xvals);repmat(extension(2),1,density)],...
            [zeros(1,density); fliplr(yvals)]];
 vert = applytm(vertices,coordOffs);
-vertices = vert(:,1:end-1);
+if strcmp(p.Results.loop,'open')
+    vertices = vert(:,1:end-1);
+end
 end
 
