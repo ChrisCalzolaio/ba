@@ -30,7 +30,11 @@ grid on; grid minor; axis equal;
 % higher density shapes
 vert6 = rectangleVert([1,2],'coordinateSystem','c','density',9);
 set(0,'CurrentFigure',figH(3));
-plot(polyshape(vert6','Simplify',false));
+pgon1 = polyshape(vert6','Simplify',false);
+plot(pgon1);
 grid on; grid minor; axis equal;
 line(vert6(1,:),vert6(2,:),'LineStyle','none','Marker','.','Color','r')
+% with closed paramter set
+vert6 = rectangleVert([1,2],'coordinateSystem','c','density',9,'loop','tight');
+pgon2 = polyshape(vert6','Simplify',false);
 
