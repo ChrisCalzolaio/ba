@@ -1,4 +1,4 @@
-figH = getFigH(2);
+figH = getFigH(3);
 
 % square rectangle, simplest form
 vert1 = rectangleVert(1);
@@ -23,4 +23,11 @@ vert5 = rectangleVert([1,2]);
 set(0,'CurrentFigure',figH(2));
 plot(polyshape(vert5))
 grid on; grid minor; axis equal;
+
+% higher density shapes
+vert6 = rectangleVert([1,2],'coordinateSystem','c','loop','tight','density',9);
+set(0,'CurrentFigure',figH(3));
+plot(polyshape(vert6,'Simplify',false));
+grid on; grid minor; axis equal;
+line(vert6(:,1),vert6(:,2),'LineStyle','none','Marker','.','Color','r')
 

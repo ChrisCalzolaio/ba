@@ -5,6 +5,7 @@ function [vertices] = rectangleVert(varargin)
 %   - extension: array of spatial exten. of the rectangle: [x,y]
 %   - coordinateSystem: position of the vertices with respect to the local coordinate system
 %   - density: number of points on a line between any two neighbouring vertices
+%   - loop: create a watertight or an open (only unique vertices) shape
 % ToDo:
 %   - abfangen Dimension des Ausdehnungsarrays (Matrix oder Vektor)
 %   - Erkennen der Dimension des Körpers (2D oder 3D);
