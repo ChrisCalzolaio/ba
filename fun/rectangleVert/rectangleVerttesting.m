@@ -5,6 +5,7 @@ vert1 = rectangleVert(1);
 set(0,'CurrentFigure',figH(1));
 plot(polyshape(vert1'));
 grid on; grid minor; axis equal;
+vert1 = rectangleVert(1,'loop','tight');
 
 % % square rectangle, coordinate system in the center, no extra vertices
 vert2 = rectangleVert(1,'coordinateSystem','center','density',0);
@@ -27,7 +28,7 @@ plot(polyshape(vert5'))
 grid on; grid minor; axis equal;
 
 % higher density shapes
-vert6 = rectangleVert([1,2],'coordinateSystem','c','loop','tight','density',9);
+vert6 = rectangleVert([1,2],'coordinateSystem','c','density',9);
 set(0,'CurrentFigure',figH(3));
 plot(polyshape(vert6','Simplify',false));
 grid on; grid minor; axis equal;
