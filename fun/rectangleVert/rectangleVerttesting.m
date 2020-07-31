@@ -3,15 +3,17 @@ figH = getFigH(3);
 % square rectangle, simplest form
 vert1 = rectangleVert(1);
 set(0,'CurrentFigure',figH(1));
-plot(polyshape(vert1));
+plot(polyshape(vert1'));
 grid on; grid minor; axis equal;
 
-% square rectangle, coordinate system in the center, no extra vertices
+% % square rectangle, coordinate system in the center, no extra vertices
 vert2 = rectangleVert(1,'coordinateSystem','center','density',0);
-% different spelling
+% % different spelling
 vert3 = rectangleVert(1,'coordinateSystem','centre','density',0);
 % different spelling
 vert3 = rectangleVert(1,'coordinateSystem','c','density',0);
+set(0,'CurrentFigure',figH(1)); hold on;
+plot(polyshape(vert3'),'FaceColor','g','EdgeColor','g');
 
 % square rectangle, force coordinate system to lower left
 vert4 = rectangleVert(1,'coordinateSystem','lowerleft','density',0);
@@ -21,7 +23,7 @@ vert4 = rectangleVert(1,'coordinateSystem','ll','density',0);
 % non-square rectangle
 vert5 = rectangleVert([1,2]);
 set(0,'CurrentFigure',figH(2));
-plot(polyshape(vert5))
+plot(polyshape(vert5'))
 grid on; grid minor; axis equal;
 
 % higher density shapes
