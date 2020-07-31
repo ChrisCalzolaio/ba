@@ -37,11 +37,14 @@ extension = p.Results.extension;
 if isscalar(extension)
     % when the extension we are given is a scalar, the shape of the rectangle
     % vertices returned is square
-    extension(2) = extension;
+    extension(2,1) = extension;
 elseif isvector(extension)
     % when the extensions we are given is a vector, only the use the first
     % two elements, the function is limited to 2d
     extension = extension(1:2);
+    if isrow(extension)          % make sure the extension parameter is a column vector
+        extension = extension';
+    end
 end
 % "parse" coordinate system behaviour
 coordOffs = eye(3);     % transformation matrix
@@ -54,17 +57,18 @@ end
 % "parse" density parameter
 density = p.Results.density + 2;
 
-xvals = linspace(0,extension(1),density)';
-yvals = linspace(0,extension(2),density)';
+
+xvals = linspace(0,extension(1),density);
+yvals = linspace(0,extension(2),density);
 xvals = xvals(1:end-1);
 yvals = yvals(1:end-1);
 density = density -1;
-vertices =[xvals,zeros(density,1);...
-           repmat(extension(1),density,1),yvals;...
-           extension;...
-           flipud(xvals),repmat(extension(2),density,1);...
-           zeros(density,1), flipud(yvals)];
-vert = [vertices,ones(length(vertices),1)] * coordOffs;
+vertices =[[xvals;zeros(1,density)],...
+           [repmat(extension(1),1,density);yvals],...
+           extension,...
+           [fliplr(xvals);repmat(extension(2),1,density)],...
+           [zeros(1,density); fliplr(yvals)]];
+vert = applytm(vertices,coordOffs);
 vertices = vert(:,1:end-1);
 end
 
