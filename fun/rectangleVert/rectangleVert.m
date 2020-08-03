@@ -6,6 +6,7 @@ function [vertices] = rectangleVert(varargin)
 %   - coordinateSystem: position of the vertices with respect to the local coordinate system
 %   - density: number of points on a line between any two neighbouring vertices
 %   - loop: create a watertight or an open (only unique vertices) shape
+%   - dimension: 2d (default) or 3d vertice information
 % ToDo:
 %   - abfangen Dimension des Ausdehnungsarrays (Matrix oder Vektor)
 %   - Erkennen der Dimension des Körpers (2D oder 3D);
@@ -15,24 +16,37 @@ function [vertices] = rectangleVert(varargin)
 %   Steller hier wahrscheinlich nicht sinnvoll
 %   - implementieren von varargin mit sinnvollen default werten
 
-% defaults
+%% defaults
+% coordinateSystem
 defaultCSYS = 'lowerleft';
 expectedCSYS = {'center','centre','c','lowerleft','ll'};
+% Loop (tightness)
 defaultLoop = 'open';
 expectedLoop = {'tight','open'};
+% density
 defaultDensity = 0;
-% parse inputs
+% dimension
+defaultDim = 2;
+expectedDim = [2,3];
+%% parse inputs
 p = inputParser;
 % extension needs to be numeric, a vector and all elements need to be larger than 0
 validExtension = @(x) isnumeric(x) && isvector(x) && all(x > 0);
-validDensity = @(d) isnumeric(d) && isscalar(d);
+% density need to be numeric and a scalar
+validNumScal = @(d) isnumeric(d) && isscalar(d);
+% dimension needs to be numeric, scalar, and within range
+validDimension = @(d) validNumScal(d) && any(expectedDim == d);
+% add arguments of the function to the parser
 addRequired(p,'extension',validExtension);
 addParameter(p,'coordinateSystem',defaultCSYS,@(s) any(validatestring(s,expectedCSYS)));
-addParameter(p,'density',defaultDensity,validDensity);
+addParameter(p,'density',defaultDensity,validNumScal);
 addParameter(p,'loop',defaultLoop,@(s) any(validatestring(s,expectedLoop)));
+addParameter(p,'dimension',defaultDim,validDimension);
+% parse
 parse(p,varargin{:});
 
-% "parse" extension
+%% process
+% extension
 extension = p.Results.extension;
 if isscalar(extension)
     % when the extension we are given is a scalar, the shape of the rectangle
@@ -46,7 +60,8 @@ elseif isvector(extension)
         extension = extension';
     end
 end
-% "parse" coordinate system behaviour
+
+% coordinate system
 coordOffs = eye(3);     % transformation matrix
 switch p.Results.coordinateSystem
     case {'lowerleft','ll'}
@@ -54,23 +69,31 @@ switch p.Results.coordinateSystem
     case {'center','centre','c'}
         coordOffs(end,1:2) = -(extension./2);
 end
-% "parse" density parameter
+
+% density
 density = p.Results.density + 2;
 
-
+%% create vertices
 xvals = linspace(0,extension(1),density);
 yvals = linspace(0,extension(2),density);
 xvals = xvals(1:end-1);
 yvals = yvals(1:end-1);
 density = density -1;
+% create vertices
 vertices =[[xvals;zeros(1,density)],...
            [repmat(extension(1),1,density);yvals],...
            extension,...
            [fliplr(xvals);repmat(extension(2),1,density)],...
            [zeros(1,density); fliplr(yvals)]];
+% apply transformation
 vert = applytm(vertices,coordOffs);
+% apply tightness characteristic
 if strcmp(p.Results.loop,'open')
     vertices = vert(:,1:end-1);
+end
+% apply dimension characteristic
+if p.Results.dimension == 3
+    vertices(3,:) = zeros(1,size(vertices,2));
 end
 end
 

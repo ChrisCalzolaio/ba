@@ -1,4 +1,4 @@
-figH = getFigH(3);
+figH = getFigH(4);
 
 % square rectangle, simplest form
 vert1 = rectangleVert(1);
@@ -38,3 +38,9 @@ line(vert6(1,:),vert6(2,:),'LineStyle','none','Marker','.','Color','r')
 vert6 = rectangleVert([1,2],'coordinateSystem','c','density',9,'loop','tight');
 pgon2 = polyshape(vert6','Simplify',false);
 
+% 3d vertices
+vert7 = rectangleVert([1,2],'coordinateSystem','c','density',0,'loop','open','dimension',3);
+pgon3 = polyshape(vert7(1:2,:)');
+set(0,'CurrentFigure',figH(4))
+plot(pgon3);
+grid on; grid minor; axis equal;
