@@ -1,4 +1,4 @@
-function [vertices] = rectangleVert(varargin)
+function [varargout] = rectangleVert(varargin)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 %  Arguments:
@@ -7,6 +7,9 @@ function [vertices] = rectangleVert(varargin)
 %   - density: number of points on a line between any two neighbouring vertices
 %   - loop: create a watertight or an open (only unique vertices) shape
 %   - dimension: 2d (default) or 3d vertice information
+%   Output: [vertices, connMap]
+%   - vertices: 3xn array of column vectors
+%   - connMap: 1xn vector of connections of the vertices array
 % ToDo:
 %   - abfangen Dimension des Ausdehnungsarrays (Matrix oder Vektor)
 %   - Erkennen der Dimension des Körpers (2D oder 3D);
@@ -87,13 +90,23 @@ vertices =[[xvals;zeros(1,density)],...
            [zeros(1,density); fliplr(yvals)]];
 % apply transformation
 vert = applytm(vertices,coordOffs);
+
+% connectivity map
+connmap = [1:(size(vertices,2)-1),1];
+
 % apply tightness characteristic
 if strcmp(p.Results.loop,'open')
     vertices = vert(:,1:end-1);
+    connmap = connmap(1:end-1);
 end
 % apply dimension characteristic
 if p.Results.dimension == 3
     vertices(3,:) = zeros(1,size(vertices,2));
 end
-end
 
+%% return values
+varargout{1} = vertices;
+if nargout == 2
+    varargout{2} = connmap;
+end
+end
