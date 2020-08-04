@@ -1,15 +1,15 @@
 function [varargout] = rectangleVert(varargin)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%rectangleVert Create rectangle vertices in cartesian coordinates
 %  Arguments:
 %   - extension: array of spatial exten. of the rectangle: [x,y]
 %   - coordinateSystem: position of the vertices with respect to the local coordinate system
 %   - density: number of points on a line between any two neighbouring vertices
 %   - loop: create a watertight or an open (only unique vertices) shape
-%   - dimension: 2d (default) or 3d vertice information
+%   - dimension: 2 (2D) (default) or 3 (3D) vertice information
 %   Output: [vertices, connMap]
 %   - vertices: 3xn array of column vectors
 %   - connMap: 1xn vector of connections of the vertices array
+
 % ToDo:
 %   - abfangen Dimension des Ausdehnungsarrays (Matrix oder Vektor)
 %   - Erkennen der Dimension des Körpers (2D oder 3D);

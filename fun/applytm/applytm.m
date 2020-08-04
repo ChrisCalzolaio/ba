@@ -1,6 +1,7 @@
 function [vec] = applytm(vec,TM)
 %APPLYTM Apply transformation matrix
-%   Detailed explanation goes here
+%   vec: array of cartesian colum vectors
+%   TM: transformation matrix (3x3 or 4x4)
 
 nrowsvec = size(vec,1);
 sTM = size(TM);
