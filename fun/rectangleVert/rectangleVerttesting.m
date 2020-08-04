@@ -1,4 +1,4 @@
-figH = getFigH(4);
+figH = getFigH(5);
 
 % square rectangle, simplest form
 vert1 = rectangleVert(1);
@@ -44,3 +44,10 @@ pgon3 = polyshape(vert7(1:2,:)');
 set(0,'CurrentFigure',figH(4))
 plot(pgon3);
 grid on; grid minor; axis equal;
+
+% connectivity map
+[vert8,faces] = rectangleVert(2,'Density',2);
+% connectivity map, closed loop shape
+[vert8,faces] = rectangleVert(2,'Density',2,'loop','tight');
+set(0,'CurrentFigure',figH(5))
+patch('Faces',faces,'Vertices',vert8','FaceColor','blue','FaceAlpha',0.5,'EdgeColor','blue')
