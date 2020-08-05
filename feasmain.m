@@ -11,17 +11,17 @@ sim.logt = table('Size',[0,4],...
 
 %% creation of objects
 % the material
-mat.od = [10,10,10];                                            % [x,y,z]: material outer dimensions
-mat.pos = [0,0,0];                                              % [x,y,z]: material coordinate system position within the the global coordsys
-mat.local.vertices = rectangleVert(mat.od,'lowerleft',100);
+mat.od = [10,10,10]';                                            % [x,y,z]: material outer dimensions
+mat.pos = [0,0,0]';                                              % [x,y,z]: material coordinate system position within the the global coordsys
+mat.local.vertices = rectangleVert(mat.od,'coordinateSystem','lowerleft','density',100);
 mat.global.vertices = mat.local.vertices + mat.pos(1:2);
-mat.pgon = polyshape(mat.global.vertices,'Simplify',false);
+mat.pgon = polyshape(mat.global.vertices','Simplify',false);
 % blade, the cutting feature
-blade.od =  [1,1,0];                                             % [x,y,z]: blade outer dimensions
-blade.pos = [0,mat.od(1)/2,mat.od(2)];                          % [x,y,z]: blade coordinate system position in global coordinate system
-blade.local.vertices = rectangleVert(blade.od,'center',10);
+blade.od =  [1,1,0]';                                             % [x,y,z]: blade outer dimensions
+blade.pos = [0,mat.od(1)/2,mat.od(2)]';                          % [x,y,z]: blade coordinate system position in global coordinate system
+blade.local.vertices = rectangleVert(blade.od(1:2),'coordinateSystem','center','density',10);
 blade.global.vertices = blade.local.vertices + blade.pos(2:3);
-blade.pgon = polyshape(blade.global.vertices,'Simplify',false);
+blade.pgon = polyshape(blade.global.vertices','Simplify',false);
 
 %% simulation
 fprintf(1,'[ %s ] Simulation setup.\n',datestr(now,'HH:mm:SS'));
@@ -37,7 +37,7 @@ for step=1:(sim.steps + 1)
     stepdur = tic;
     xpos = (step-1) * sim.stepsize.x;
     rota = (step-1) * sim.stepsize.rot;
-    toolpath(step).pgon = blade.pgon.rotate(rota,blade.pos(2:3));
+    toolpath(step).pgon = blade.pgon.rotate(rota,blade.pos(2:3)');
 
     part(step).pgon = mat.pgon.subtract(toolpath(step).pgon,'KeepCollinearPoints',true);
     part(step).pos(3) = xpos;
