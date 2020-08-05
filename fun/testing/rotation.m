@@ -11,8 +11,8 @@ normal = [0,0,1]';                                  % polyshapes default to the 
 origin = zeros(3);                                  % origin-coordinate system as matrix of component vectors
 csys = eye(3);                                      % origin coordinate system as matrix of the vectors
 
-polvert = rectangleVert([2,2],'center',2);          % create polygon vertices
-polyg = polyshape(polvert);                         % create polyshape object
+polvert = rectangleVert([2,2],'coordinateSystem','center','density',2);     % create polygon vertices
+polyg = polyshape(polvert');                         % create polyshape object
 plot(polyg,'Parent',grp)                            % plot shape
 
 basetm = vec2rot(normal,rotaxis);                           % create the base transformation matrix, so object is perpendicular to rotation axis
