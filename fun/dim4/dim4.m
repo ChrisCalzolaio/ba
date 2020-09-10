@@ -34,7 +34,7 @@ switch type
         switch direction
             case 'forward'
                 if ~(sA == 4)           % only convert if matrix isn't already 4d
-                    tmp = eye(4);
+                    tmp = eye(4,'like',A);
                     tmp(1:3,1:3) = A;
                     A = tmp;
                 end
