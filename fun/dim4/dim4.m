@@ -25,7 +25,7 @@ switch type
                 A = A(1:3,:);
         end
     case 2
-        [nrows,ncols] = size(A);
+        [nrows,ncols,ndims] = size(A);
         if ~(nrows==ncols)      % check size conformity
             error('Provided transform matrix is not sqare.')
         else
@@ -34,8 +34,8 @@ switch type
         switch direction
             case 'forward'
                 if ~(sA == 4)           % only convert if matrix isn't already 4d
-                    tmp = eye(4);
-                    tmp(1:3,1:3) = A;
+                    tmp = repmat(eye(4,'like',A),1,1,ndims);
+                    tmp(1:3,1:3,:) = A;
                     A = tmp;
                 end
             case 'backward'
