@@ -1,4 +1,4 @@
-function R = axang2rtm( ax, ang )
+function R = axang2rtm( ax, ang, varargin )
 %AXANG2ROTM Convert axis-angle rotation representation to rotation matrix
 %   R = AXANG2ROTM(AXANG) converts a 3D rotation given in axis-angle form,
 %   AXANG, to an orthonormal rotation matrix, R. AXANG is an N-by-4
@@ -75,7 +75,13 @@ if ne(numAng,numAx)     % dimensions not equal
         end
     end
 end
-
+% parse varargin
+defaultDim = '4';
+expectedDim = {'4','4d','3','3d'};
+p = inputParser;
+validDim = @(s) any(validatestring(s,expectedDim));
+addParameter(p,'dimension',defaultDim,validDim);
+parse(p,varargin{:});
 
 %% Parse axis argument
 if isnumeric(ax)
@@ -122,4 +128,9 @@ tempR = cat(1, vx.*vx.*vth+cth,     vy.*vx.*vth-vz.*sth, vz.*vx.*vth+vy.*sth, ..
 R = reshape(tempR, [3, 3, length(vx)]);
 R = permute(R, [2 1 3]);
 
+% return converted 4d matrix
+switch p.Results.dimension
+    case {'4','4d'}
+        R = dim4(R,2,'forward');
+end
 end
