@@ -37,16 +37,65 @@ function R = axang2rtm( ax, ang )
 % y = normalized axis ay coordinate
 % z = normalized axis az coordinate
 
-%% Normalize the axis
-%default code can't handle sym data type
-%own code "stolen" from the vec2rot function
-% Normalize the axis
-% v = robotics.internal.normalizeRows(axang(:,1:3));
-v = ax;
-v = v/norm(v);
+%% parse inputs
+numAng = size(ang,1);                           % number of angles provided
+check = true;
+while check                                     % number of axes provided
+    check = false;
+    switch class(ax)
+        case 'char'
+            numAx = size(ax,2);
+            axSC = true;                        % axis argument is shortcut notation
+        case 'string'
+            ax = char(ax);
+            check = true;                          % run again
+        case {'double','single','sym'}          % this doesn't contain all allowed classes (numeric, sym)
+            numAx = size(ax,1);
+            axSC = false;
+    end
+end
+% check mismatch of dimensions
+numInputs = max(numAx,numAng);          % assume they are equal
+if ne(numAng,numAx)     % dimensions not equal
+    if ~any([numAx,numAng]==1)
+        % if dimensions aren't equal and none is 1, we don't know how to
+        % reconcile the dimension mismatch
+        error("Dimensions don't agree.")
+    elseif all([numAx,numAng]==1)   % both dimensions are 1
+        numInputs = 1;
+    else % dimensions not equal and not both 1, we need to find the input we have to replicate
+        if min(numAx,numAng) == numAx  % number of axes provided to small
+            if axSC                     % when axis information was passed as char, concatenate horizontally
+                ax = repmat(ax,1,numInputs);
+            else                        % when axis information was passed as numeric or sym, concatenate vertically
+                ax = repmat(ax,numInputs,1);
+            end
+        else                           % number of angles to small
+            ang = repmat(ang,numInputs,1);
+        end
+    end
+end
 
+
+%% Parse axis argument
+if isnumeric(ax)
+    ax = ax/norm(ax);           % Normalize the axis, "stolen" from the vec2rot function
+else
+    axArg = ax;
+    ax = zeros(numInputs,3);
+    for dim=1:numInputs
+        switch axArg(dim)
+            case 'x'
+                ax(dim,:) = [1,0,0];
+            case 'y'
+                ax(dim,:) = [0,1,0];
+            case 'z'
+                ax(dim,:) = [0,0,1];
+        end
+    end
+end
+            
 % Extract the rotation angles and shape them in depth dimension
-numInputs = size(ang,1);
 theta = zeros(1,1,numInputs,'like',ang);
 theta(1,1,:) = ang;
 
@@ -61,9 +110,9 @@ vy = vx;
 vz = vx;
 
 % Shape input vectors in depth dimension
-vx(1,1,:) = v(:,1);
-vy(1,1,:) = v(:,2);
-vz(1,1,:) = v(:,3);
+vx(1,1,:) = ax(:,1);
+vy(1,1,:) = ax(:,2);
+vz(1,1,:) = ax(:,3);
 
 % Explicitly specify concatenation dimension
 tempR = cat(1, vx.*vx.*vth+cth,     vy.*vx.*vth-vz.*sth, vz.*vx.*vth+vy.*sth, ...
