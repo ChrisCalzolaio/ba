@@ -1,29 +1,25 @@
 function R = axang2rtm( ax, ang, varargin )
 %AXANG2ROTM Convert axis-angle rotation representation to rotation matrix
 %   R = AXANG2ROTM(AXANG) converts a 3D rotation given in axis-angle form,
-%   AXANG, to an orthonormal rotation matrix, R. AXANG is an N-by-4
-%   matrix of N axis-angle rotations. The first three elements of every
-%   row specify the rotation axis and the last element defines the rotation
-%   angle (in radians).
-%   The output, R, is an 3-by-3-by-N matrix containing N rotation matrices. 
-%   Each rotation matrix has a size of 3-by-3 and is orthonormal.
+%   AXANG, to an orthonormal rotation matrix
+%   ax is an N-by-1 vector of N angles
+%   ang is an M-by-3 matrix of M axes
+%   R is are L rotation matrices, 4x4xL by default; 3x3xL if requested
+%   Each rotation matrix is orthonormal, L is determined by max(N,M)
+%   N and M have to be equal, or either one has to be 1
 %
 %   Example:
 %      % Convert a rotation from axis-angle to rotation matrix
-%      axang = [0 1 0 pi/2];
-%      R = axang2rotm(axang)
+%      ax = [0 1 0];
+%      ang = [pi/2];
+%      R = axang2rotm(ax,ang)
 %
-%   See also rotm2axang
-
+%   See also rotm2axang, axang2rotm
+%
 %   Copyright 2014-2018 The MathWorks, Inc.
+%   edited 2020 - Christopher Schuster [christopher.schuster@stud.th-deg.de]
 
-%#codegen
-
-%% comment out the validation function
-% we need to develop our own version of that validation, capable of handling sym data type
-% robotics.internal.validation.validateNumericMatrix(axang, 'axang2rotm', 'axang', ...
-%     'ncols', 4);
-
+% explanation of the relevant math
 % For a single axis-angle vector [ax ay az theta] the output rotation
 % matrix R can be computed as follows:
 % R =  [t*x*x + c	  t*x*y - z*s	   t*x*z + y*s
