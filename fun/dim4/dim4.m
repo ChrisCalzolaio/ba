@@ -11,6 +11,7 @@ function [A] = dim4(A,type,direction)
 %       - better handling of edge cases required
 %       - increase dimension by one, regardless of dimensions provided to
 %       allow for i.e. 2d transformations
+%   See also rotm2tform
 
 switch type
     case 1
