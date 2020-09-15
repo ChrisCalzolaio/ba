@@ -1,5 +1,16 @@
 function H = trvecHomTform( varargin )
 %TRVECHOMTFORM Convert translation vector to homogeneous transformation
+%   H = trvecHomTform( t ) converts the cartesian representation of a 3D translation
+%   vector, t, into the corresponding homogeneous transformation, H.
+%
+%   H = trvecHomTform( 'x',a, 'y',b, 'z',c ) converts the axis-wise specified,
+%   seperate values into the corresponding homogeneous transformation, H.
+%   Axes along which the translation is zero, may be left out as arguments.
+%
+%   The function accepts inputs of type sym.
+%
+%   See also trvec2tform
+
 %   Detailed explanation goes here
 %   trvec = [a b c; d e f]
 %   ToDo:
@@ -23,6 +34,8 @@ elseif ~mod(nArgs,2)            % we need a Name-Value-Pair, otherwise the input
         end
     end
     trvec = [xtrvec, ytrvec, ztrvec];
+else
+    error("Incorrect number of inputs.")
 end
 
 numTransl = size(trvec,1);       % [number of Translation vectors, size of matrix of vecs]
