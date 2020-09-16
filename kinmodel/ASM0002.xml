@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimscapeMultibodyImportXML version="2.0" xmlns="urn:mathworks:SimscapeMultibody:import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Created by="Chris" on="09/01/20||14:32:36" using="Simscape Multibody Link Version 6.0" from="Pro/Engineer Creo 6.0 - 2019224"/>
+<ModelUnits mass="kg" length="mm"/>
+<RootAssembly name="ASM0002" uid="ASM0002_asm" version="144">
+<AssemblyFile name="ASM0002.asm" type="ProEngineer Assembly"/>
+<InstanceTree>
+<Instance name="ASM0002_SKEL" uid="2" entityUid="ASM0002_SKEL_prt">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0002" grounded="true" uid="5" entityUid="PRT0002_prt">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0001" uid="9" entityUid="PRT0001_prt">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>-2.2962127484012878e-014 0 0</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0003" uid="11" entityUid="PRT0003_prt">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>-80.000000000001805 1.2730153685004828e-014 1.2639660384422825e-013</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0004" uid="12" entityUid="PRT0004_prt">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>-80.000000000002302 1.2730153685004881e-014 -2.4683134161979383e-013</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0005" uid="14" entityUid="PRT0005_prt">
+<Transform>
+<Rotation>1 0 0 0 1 -1.1542690349537757e-010 0 1.1542690349537757e-010 1</Rotation>
+<Translation>-80.000000000002245 1.1542703079691448e-008 -2.8578212831110982e-013</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0006" uid="15" entityUid="PRT0006_prt">
+<Transform>
+<Rotation>1 0 0 0 1 -1.1542690349537759e-010 0 1.1542690349537759e-010 1</Rotation>
+<Translation>-80.000000000002572 1.1542703079691451e-008 -3.1073328540878251e-013</Translation>
+</Transform>
+</Instance>
+<Instance name="PRT0007" uid="16" entityUid="PRT0007_prt">
+<Transform>
+<Rotation>1 0 -3.0619793100400346e-014 0 1 -1.1542690349537759e-010 3.0619793100381981e-014 1.1542690349537759e-010 1</Rotation>
+<Translation>-79.999999999999844 1.1542703079692826e-008 -1.2222175892745445e-011</Translation>
+</Transform>
+</Instance>
+</InstanceTree>
+<Constraints>
+<Coincident name="Coincident_9_0">
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>5</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>2.2962127484012878e-014 0 -125.00000000000003</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>9</Uid>
+</InstancePath>
+<Position>0 0 -80.510456424926588</Position>
+<Axis>0 0 161.02091284985318</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_9_1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>5</Uid>
+</InstancePath>
+<Position>0 0 -125</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>9</Uid>
+</InstancePath>
+<Position>0 0 -125</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_11_0">
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>9</Uid>
+</InstancePath>
+<Position>-219.21687343198872 0 -200</Position>
+<Axis>438.43374686397743 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>11</Uid>
+</InstancePath>
+<Position>-219.21687343198872 0 -200</Position>
+<Axis>438.43374686397743 0 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_11_1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>9</Uid>
+</InstancePath>
+<Position>0 0 -200</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>11</Uid>
+</InstancePath>
+<Position>0 0 -200</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_12_0">
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>11</Uid>
+</InstancePath>
+<Position>600 0 219.21687343198872</Position>
+<Axis>0 0 -438.43374686397743</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>12</Uid>
+</InstancePath>
+<Position>600 0 219.21687343198872</Position>
+<Axis>0 0 -438.43374686397743</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_12_1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>11</Uid>
+</InstancePath>
+<Position>600 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>12</Uid>
+</InstancePath>
+<Position>600 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_14_0">
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>12</Uid>
+</InstancePath>
+<Position>219.21687343198872 0 100</Position>
+<Axis>-438.43374686397743 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>14</Uid>
+</InstancePath>
+<Position>219.21687343198872 0 100</Position>
+<Axis>-438.43374686397743 0 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_14_1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>12</Uid>
+</InstancePath>
+<Position>520 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>14</Uid>
+</InstancePath>
+<Position>520 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_15_0">
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>14</Uid>
+</InstancePath>
+<Position>485 -219.21687343198872 100</Position>
+<Axis>0 438.43374686397743 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>15</Uid>
+</InstancePath>
+<Position>485 -219.21687343198872 100</Position>
+<Axis>0 438.43374686397743 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_15_1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>14</Uid>
+</InstancePath>
+<Position>485 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>15</Uid>
+</InstancePath>
+<Position>485 0 0</Position>
+<Axis>1 0 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_16_0">
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>15</Uid>
+</InstancePath>
+<Position>390 219.21687343198872 100</Position>
+<Axis>0 -438.43374686397743 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="line">
+<InstancePath>
+<Uid>16</Uid>
+</InstancePath>
+<Position>390 219.21687343198872 100</Position>
+<Axis>0 -438.43374686397743 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident_16_1">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>15</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>16</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 1 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+</Constraints>
+</RootAssembly>
+<Assemblies>
+</Assemblies>
+<Parts>
+<Part name="ASM0002_SKEL" uid="ASM0002_SKEL_prt" version="9">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="ASM0002_SKEL.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>0</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>0 0 0 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="asm0002_skel_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0" g="0.22499999999999998" b="0.29999999999999999" a="1"/>
+<Diffuse r="0" g="0.59999999999999998" b="0.79999999999999993" a="1"/>
+<Specular r="0.5" g="0.5" b="0.5" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.39999999999999997</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0001" uid="PRT0001_prt" version="317">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0001.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>249025718721.86957</Mass>
+<CenterOfMass>410.98917472494981 0 -316.88917391707042</CenterOfMass>
+<Inertia>11381406132975688 39825449671417136 48129487984442960 0 545703689361109.37 0</Inertia>
+</MassProperties>
+<GeometryFile name="prt0001_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.59999999999999998" g="0.084160911331911725" b="0.47898453971068222" a="1"/>
+<Diffuse r="0.89999999999999991" g="0.12624136699786759" b="0.71847680956602333" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0002" uid="PRT0002_prt" version="11518">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0002.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>44082222544.619514</Mass>
+<CenterOfMass>0 0 6.4254127899607809</CenterOfMass>
+<Inertia>920870305824038.62 920870112875304.75 1509553890003775.2 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="prt0002_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.01144141592385455" g="0.44941199999999998" b="0.18364579561760044" a="1"/>
+<Diffuse r="0.017162123885781824" g="0.67411799999999999" b="0.27546869342640068" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0003" uid="PRT0003_prt" version="359">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0003.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>73041402043.912094</Mass>
+<CenterOfMass>735.0524067845929 0 56.643800811616593</CenterOfMass>
+<Inertia>3131770112458774.5 2129651908124704.5 2032523547495601.2 0 189325039405668.47 0</Inertia>
+</MassProperties>
+<GeometryFile name="prt0003_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.015920064271850297" g="0.56504854368932034" b="0.53858723574001122" a="1"/>
+<Diffuse r="0.023880096407775445" g="0.84757281553398056" b="0.80788085361001682" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0004" uid="PRT0004_prt" version="247">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0004.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>8096411730.329936</Mass>
+<CenterOfMass>563.00955776161891 0 100</CenterOfMass>
+<Inertia>192836667980994.19 44329895848389.391 155267391859559.87 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="prt0004_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.57589533962242478" g="0.58252427184466016" b="0.29628865594193793" a="1"/>
+<Diffuse r="0.86384300943363712" g="0.87378640776699024" b="0.44443298391290686" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0005" uid="PRT0005_prt" version="263">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0005.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>3278698123.0026016</Mass>
+<CenterOfMass>500.57048414261965 0 100.00000000000003</CenterOfMass>
+<Inertia>69310691089512.437 9416677302727.1914 60823447448584.555 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="prt0005_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.49434921298496315" g="0.39278049593533321" b="0.54466019417475731" a="1"/>
+<Diffuse r="0.74152381947744472" g="0.58917074390299984" b="0.81699029126213585" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0006" uid="PRT0006_prt" version="351">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0006.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>3533630582.0470033</Mass>
+<CenterOfMass>442.18186987516884 -24.317872208512906 99.99999630484767</CenterOfMass>
+<Inertia>71729289484421.906 12006913147502.449 69515433445299.82 0 0 -4216024785225.0825</Inertia>
+</MassProperties>
+<GeometryFile name="prt0006_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.15416720162244155" g="0.59708737864077666" b="0.26094448606582032" a="1"/>
+<Diffuse r="0.23125080243366233" g="0.89563106796116498" b="0.39141672909873049" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+<Part name="PRT0007" uid="PRT0007_prt" version="3686">
+<ModelUnits mass="kg" length="mm"/>
+<PartFile name="PRT0007.prt" type="ProEngineer Part"/>
+<MassProperties>
+<Mass>1458362472.4800305</Mass>
+<CenterOfMass>390.00400735851269 10.446908475672506 100.0003609494966</CenterOfMass>
+<Inertia>9759909707311.9199 1269740782901.0469 9759683716255.1113 -48488867819.830658 0 4891109038.0592346</Inertia>
+</MassProperties>
+<GeometryFile name="prt0007_prt.step" type="STEP"/>
+<VisualProperties>
+<Ambient r="0.047695226073038728" g="0.39377831994890855" b="0.5592233009708738" a="1"/>
+<Diffuse r="0.071542839109558096" g="0.59066747992336277" b="0.8388349514563106" a="1"/>
+<Specular r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.59999999999999998</Shininess>
+</VisualProperties>
+</Part>
+</Parts>
+</SimscapeMultibodyImportXML>
