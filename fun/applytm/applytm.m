@@ -15,7 +15,8 @@ switch sTM     % determine type of transformation matrix provided
         TM = dim4(TM,2,'forward');
 end
 % apply transformation
-vec = dim4(TM' * dim4(vec,1,'forward'),1,'backward');
+% warum war die Transformationsmatrix transponiert??
+vec = dim4(TM * dim4(vec,1,'forward'),1,'backward');
 % if the vector matrix was size 2, so x,y information, we converted it to
 % a generix x,y,z vector matrix, with the z-values being 0, but we only
 % want to return an x,y vector matrix again
