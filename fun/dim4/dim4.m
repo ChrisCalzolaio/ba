@@ -12,30 +12,33 @@ function [A] = dim4(A,type,direction)
 %       - increase dimension by one, regardless of dimensions provided to
 %       allow for i.e. 2d transformations
 %   See also rotm2tform
+if isa(A, 'sym')
+    sA = size(A);
+    if numel(sA)==2
+        sA(3) = 1;
+    end
+else
+    sA = size(A,1:3);
+end
 
 switch type
-    case 1
-        [nrows,ncols] = size(A);      % number of column vectors in the matrix of vectors
+    case 1  % vector of coordinates
         switch direction
             case 'forward'
-                if nrows==2             % if the vector has two rows, its only x,y, add z-value of value 0
-                    A = [A;ones(1,ncols)];
-                end
-                A = [A;ones(1,ncols)];
+                % append as many rows of value one, as needed to reach 4xN
+                % size, required for homogeneous transformation
+                A = [A;ones([4-sA(1),sA(2:3)])];
             case 'backward'
-                A = A(1:3,:);
+                A = A(1:3,:,:);
         end
-    case 2
-        [nrows,ncols,ndims] = size(A);
-        if ~(nrows==ncols)      % check size conformity
+    case 2  % transformation matrix
+        if diff(sA(1:2))            % check size conformity
             error('Provided transform matrix is not sqare.')
-        else
-            sA = nrows;
         end
         switch direction
             case 'forward'
-                if ~(sA == 4)           % only convert if matrix isn't already 4d
-                    tmp = repmat(eye(4,'like',A),1,1,ndims);
+                if sA(1) < 4            % only convert if matrix isn't already 4d
+                    tmp = repmat(eye(4,'like',A),1,1,sA(3));
                     tmp(1:3,1:3,:) = A;
                     A = tmp;
                 end
