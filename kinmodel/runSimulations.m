@@ -10,7 +10,7 @@ a = 0;
 b = 0;
 c = 0;
 % point of interest
-poi = [-60 11.4937 0];      % [mm] punkt in werkzeugkoordinaten
+poi = [-60 11.4937 0]';      % [mm] punkt in werkzeugkoordinaten
 
 %% Vorschübe
 % x-Achse
@@ -39,17 +39,23 @@ nSchritt = 1e3;
 % drehgechwindigkeit
 slopeB = nB;
 
-anaT = linspace(0,tSim,nSchritt+1)';
+anaT = linspace(0,tSim,nSchritt+1)';        % time for analytic calculation
+B(1,1,:) = slopeB .* anaT;
+
 currB = 0;
-traj = nan(length(anaT),3);
+vecT = tic;
+TMgesamt = double(vpa(subs(Gesamt)));
+trajvec = applytm(poi,TMgesamt);
+fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(vecT))
 
 iterT = tic;
+traj = nan(3,length(anaT));
 % 1:nSchritt+1
 for schritt = 1:length(anaT)
     currB = slopeB * anaT(schritt);
     B = currB;
     TMgesamt = double(vpa(subs(Gesamt)));
-    traj(schritt,:) = applytm(poi',TMgesamt)';
+    traj(:,schritt) = applytm(poi,TMgesamt);
     %     traj(schritt,:) = app
 end
 fprintf('[ %s ] time to run the iteration: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(iterT))
