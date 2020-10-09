@@ -30,7 +30,8 @@ end
 
 % apply transformation
 vecout = dim4(pagemtimes( TM , dim4(vecin,1,'forward')),1,'backward');
-
+% return point cloud with one iteration (time) step
+vecout = reshape(vecout,3,sVec(2)*sTM(3));
 
 if sVec(1)==2
 % if the vector matrix was size 2, so x,y information, we converted it to
