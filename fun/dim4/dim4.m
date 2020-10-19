@@ -12,14 +12,8 @@ function [A] = dim4(A,type,direction)
 %       - increase dimension by one, regardless of dimensions provided to
 %       allow for i.e. 2d transformations
 %   See also rotm2tform
-if isa(A, 'sym')
-    sA = size(A);
-    if numel(sA)==2
-        sA(3) = 1;
-    end
-else
-    sA = size(A,1:3);
-end
+
+sA = sizeSym(A);        % size detection must be sym robust
 
 switch type
     case 1  % vector of coordinates
