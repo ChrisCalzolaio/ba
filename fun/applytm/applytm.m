@@ -4,29 +4,13 @@ function [vecout] = applytm(vecin,TM)
 %   TM: transformation matrix (3x3 or 4x4)
 
 % vector dimensions
-vecIsSym = isa(vecin, 'sym');
-if vecIsSym
-    sVec = size(vecin);
-    if numel(sVec)==2
-        sVec(3) = 1;
-    end
-else
-    sVec = size(vecin,1:3);
-end
+[sVec,vecIsSym] = sizeSym(vecin);
 % dim 1: koordinaten der Punkte
 % dim 2: punkte in einer punktewolke
 % dim 3: punkte einzelner schritte einer zeitlichen entwicklung
 
 % transformations matrix dimensions
-matIsSym = isa(TM, 'sym');
-if matIsSym
-    sTM = size(TM);
-    if numel(sTM)==2
-        sTM = 1;
-    end
-else
-    sTM = size(TM,1:3);
-end
+[sTM, matIsSym] = sizeSym(TM);
 % dim 1+2: tm für punkte oder punktewolke
 % dim 3: tms einzelner schritte einer zeitlichen entwicklung
 
