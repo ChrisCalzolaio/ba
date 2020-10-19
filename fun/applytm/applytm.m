@@ -4,13 +4,29 @@ function [vecout] = applytm(vecin,TM)
 %   TM: transformation matrix (3x3 or 4x4)
 
 % vector dimensions
-sVec = size(vecin,1:3);
+vecIsSym = isa(vecin, 'sym');
+if vecIsSym
+    sVec = size(vecin);
+    if numel(sVec)==2
+        sVec(3) = 1;
+    end
+else
+    sVec = size(vecin,1:3);
+end
 % dim 1: koordinaten der Punkte
 % dim 2: punkte in einer punktewolke
 % dim 3: punkte einzelner schritte einer zeitlichen entwicklung
 
 % transformations matrix dimensions
-sTM = size(TM,1:3);
+matIsSym = isa(TM, 'sym');
+if matIsSym
+    sTM = size(TM);
+    if numel(sTM)==2
+        sTM = 1;
+    end
+else
+    sTM = size(TM,1:3);
+end
 % dim 1+2: tm für punkte oder punktewolke
 % dim 3: tms einzelner schritte einer zeitlichen entwicklung
 
@@ -28,10 +44,14 @@ if all([sTM(3),sVec(3)] > 1) && diff([sVec(3),sTM(3)])
     error("Length of 3rd dimensions of Point and Transformation Matrix don't agree.")
 end
 
+if any([vecIsSym,matIsSym])
+    vecout = TM * dim4(vecin,1,'forward');
+else
 % apply transformation
 vecout = dim4(pagemtimes( TM , dim4(vecin,1,'forward')),1,'backward');
 % return point cloud with one iteration (time) step
 vecout = reshape(vecout,3,sVec(2)*sTM(3));
+end
 
 if sVec(1)==2
 % if the vector matrix was size 2, so x,y information, we converted it to
