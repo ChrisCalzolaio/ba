@@ -6,9 +6,9 @@ overallT = tic;
 
 %% Bedatung der Variablen für die Simulation
 % Werkstück offset
-a = 0;
-b = 0;
-c = 0;
+a = 25;
+b = 25;
+c = 25;
 % point of interest
 poi = [-60 0 -11.4937]';      % [mm] punkt in werkzeugkoordinaten
 
@@ -34,7 +34,7 @@ A = 0;          % winkel A in rad
 %% Berechnung
 % Simulations Setup
 nB = 1;         % [1*s^-1], drehzahl der b-achse
-tSim = 32*pi;
+tSim = 64*pi;
 % analytische Berechnung
 nSchritt = 1e3;
 % drehgechwindigkeit
@@ -68,9 +68,14 @@ simulinkT = tic;
 traj = trajvec;
 simOut = sim('ASM00021');
 fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
-% Daten extrahieren
+%% Daten extrahieren
+% zeit
 simT = simOut.logsout{1}.Values.Time;
-simCord = simOut.logsout{1}.Values.Data'; % [m] simulink return an Nx3 matrix of vectors, we work with 3xN coordinat matricess
+% winkel des werkstuecks
+simAng = simOut.logsout{1}.Values.Data'; % [rad]
+simAngRS = interp1(simT,simAng',anaT)';
+% koordinaten des poi
+simCord = simOut.logsout{2}.Values.Data'; % [m] simulink return an Nx3 matrix of vectors, we work with 3xN coordinat matricess
 simCord = simCord * 1e3; % [mm]
 simCordRS = interp1(simT,simCord',anaT)';
 % get time
