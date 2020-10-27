@@ -7,8 +7,8 @@ overallT = tic;
 %% Bedatung der Variablen für die Simulation
 % Werkstück offset
 a = 25;
-b = 25;
-c = 25;
+b = 0;
+c = 0;
 % point of interest
 poi = [-60 0 -11.4937]';      % [mm] punkt in werkzeugkoordinaten
 
@@ -34,11 +34,14 @@ A = 0;          % winkel A in rad
 %% Berechnung
 % Simulations Setup
 nB = 1;         % [1*s^-1], drehzahl der b-achse
-tSim = 64*pi;
+slopeB = nB;    % drehgechwindigkeit, eigentlich die Ableitung
+% stop simulation
+cStop = 2*pi;       % simulation beenden wenn werkstück eine volle umdrehung gemacht
+tSim = abs((cStop - ga)/(f_WSTrad*slopeB)); % Dauer der Simulation, bis cStop erreich ist, also vorgegebener Winkel C
+% tSim = 64*pi;
+
 % analytische Berechnung
 nSchritt = 1e3;
-% drehgechwindigkeit
-slopeB = nB;
 
 anaT = linspace(0,tSim,nSchritt+1)';        % time for analytic calculation
 B(1,1,:) = slopeB .* anaT;
