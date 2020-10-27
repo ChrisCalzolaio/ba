@@ -10,7 +10,7 @@ a = 0;
 b = 0;
 c = 0;
 % point of interest
-poi = [-60 11.4937 0]';      % [mm] punkt in werkzeugkoordinaten
+poi = [-60 0 -11.4937]';      % [mm] punkt in werkzeugkoordinaten
 
 %% Vorschübe
 % x-Achse
@@ -26,7 +26,8 @@ Y_shift = 0;
 % C-Achse
 zWst = 50;              % zähnezahl werkstuck
 zWz = 1;                % zähnezahl werkzeug
-f_WSTrad = zWz / zWst;
+dirFac = -1;            % definiert Drehrichtung der Spirale (pos: Rechtsgewinde)
+f_WSTrad = zWz / zWst * dirFac;
 ga = 0;                 % werkstuckwinkel offset
 % A-Achse
 A = 0;          % winkel A in rad
