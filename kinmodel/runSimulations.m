@@ -6,7 +6,7 @@ overallT = tic;
 
 %% Bedatung der Variablen für die Simulation
 % Werkstück offset
-a = 25;
+a = 100;
 b = 0;
 c = 0;
 % point of interest
@@ -83,5 +83,3 @@ simCord = simCord * 1e3; % [mm]
 simCordRS = interp1(simT,simCord',anaT)';
 % get time
 fprintf('[ %s ] time to run script: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(overallT))
-% run analysis
-evalc('analyzeResults');
