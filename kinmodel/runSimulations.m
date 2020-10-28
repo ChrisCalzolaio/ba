@@ -6,9 +6,9 @@ overallT = tic;
 
 %% Bedatung der Variablen für die Simulation
 % Werkstück offset
-a = 0;
-b = 0;
-c = 50;
+a = 50;
+b = 50;
+c = 0;
 % point of interest
 poi = [-60 0 -11.4937]';      % [mm] punkt in werkzeugkoordinaten
 
