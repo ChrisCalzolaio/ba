@@ -73,12 +73,14 @@ simOut = sim('ASM00021');
 fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
 %% Daten extrahieren
 % zeit
-simT = simOut.logsout{1}.Values.Time;
+simT = simOut.tout;
 % winkel des werkstuecks
-simAng = simOut.logsout{1}.Values.Data'; % [rad]
+simAng = simOut.logsout.find('angC');       % accessing the handle by getting the element for the required name doesn't break, when adding or removing logged signals
+simAng = simAng.Values.Data';               % [rad]
 simAngRS = interp1(simT,simAng',anaT)';
 % koordinaten des poi
-simCord = simOut.logsout{2}.Values.Data'; % [m] simulink return an Nx3 matrix of vectors, we work with 3xN coordinat matricess
+simCord = simOut.logsout.find('poi_xyz');
+simCord = simCord.Values.Data';             % [m] simulink returns an Nx3 matrix of vectors, we work with 3xN coordinat matricess
 simCord = simCord * 1e3; % [mm]
 simCordRS = interp1(simT,simCord',anaT)';
 % get time
