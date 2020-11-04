@@ -36,8 +36,8 @@ A = 0;          % winkel A in rad
 nB = 1;         % [1*s^-1], drehzahl der b-achse
 slopeB = nB;    % drehgechwindigkeit, eigentlich die Ableitung
 % stop simulation
-cStop = 2*pi;       % simulation beenden wenn werkstück eine volle umdrehung gemacht
-tSim = abs((cStop - ga)/(f_WSTrad*slopeB)); % Dauer der Simulation, bis cStop erreich ist, also vorgegebener Winkel C
+cStop = 2*pi;                               % simulation beenden wenn werkstück eine volle umdrehung gemacht
+tSim = ang2t(cStop - ga, f_WSTra, slopeB);  % Dauer der Simulation, bis cStop erreich ist, also vorgegebener Winkel C
 % tSim = 64*pi;
 
 % analytische Berechnung
