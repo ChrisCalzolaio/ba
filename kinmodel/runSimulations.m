@@ -6,8 +6,8 @@ overallT = tic;
 
 %% Bedatung der Variablen für die Simulation
 % Werkstück offset
-a = 0;
-b = 0;
+a = 50;
+b = 50;
 c = 0;
 % point of interest
 poi = [-60 0 -11.4937]';      % [mm] punkt in werkzeugkoordinaten
@@ -34,11 +34,14 @@ A = 0;          % winkel A in rad
 %% Berechnung
 % Simulations Setup
 nB = 1;         % [1*s^-1], drehzahl der b-achse
-tSim = 32*pi;
+slopeB = nB;    % drehgechwindigkeit, eigentlich die Ableitung
+% stop simulation
+cStop = 2*pi;       % simulation beenden wenn werkstück eine volle umdrehung gemacht
+tSim = abs((cStop - ga)/(f_WSTrad*slopeB)); % Dauer der Simulation, bis cStop erreich ist, also vorgegebener Winkel C
+% tSim = 64*pi;
+
 % analytische Berechnung
 nSchritt = 1e3;
-% drehgechwindigkeit
-slopeB = nB;
 
 anaT = linspace(0,tSim,nSchritt+1)';        % time for analytic calculation
 B(1,1,:) = slopeB .* anaT;
@@ -68,12 +71,17 @@ simulinkT = tic;
 traj = trajvec;
 simOut = sim('ASM00021');
 fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
-% Daten extrahieren
-simT = simOut.logsout{1}.Values.Time;
-simCord = simOut.logsout{1}.Values.Data'; % [m] simulink return an Nx3 matrix of vectors, we work with 3xN coordinat matricess
+%% Daten extrahieren
+% zeit
+simT = simOut.tout;
+% winkel des werkstuecks
+simAng = simOut.logsout.find('angC');       % accessing the handle by getting the element for the required name doesn't break, when adding or removing logged signals
+simAng = simAng.Values.Data';               % [rad]
+simAngRS = interp1(simT,simAng',anaT)';
+% koordinaten des poi
+simCord = simOut.logsout.find('poi_xyz');
+simCord = simCord.Values.Data';             % [m] simulink returns an Nx3 matrix of vectors, we work with 3xN coordinat matricess
 simCord = simCord * 1e3; % [mm]
 simCordRS = interp1(simT,simCord',anaT)';
 % get time
 fprintf('[ %s ] time to run script: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(overallT))
-% run analysis
-evalc('analyzeResults');
