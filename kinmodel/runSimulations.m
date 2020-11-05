@@ -6,8 +6,8 @@ overallT = tic;
 
 %% Bedatung der Variablen für die Simulation
 % Werkstück offset
-a = 50;
-b = 50;
+a = 0;
+b = 0;
 c = 0;
 % point of interest
 poi = [-60 0 -11.4937]';      % [mm] punkt in werkzeugkoordinaten
@@ -35,9 +35,17 @@ A = 0;          % winkel A in rad
 % Simulations Setup
 nB = 1;         % [1*s^-1], drehzahl der b-achse
 slopeB = nB;    % drehgechwindigkeit, eigentlich die Ableitung
-% stop simulation
-cStop = 2*pi;       % simulation beenden wenn werkstück eine volle umdrehung gemacht
-tSim = abs((cStop - ga)/(f_WSTrad*slopeB)); % Dauer der Simulation, bis cStop erreich ist, also vorgegebener Winkel C
+%% stop simulation
+stopCrit = 'angB';
+
+cStop = 2*pi;                               % simulation beenden wenn werkstück eine volle umdrehung gemacht
+bStop = 2*pi;
+switch stopCrit
+    case 'angC'
+        tSim = ang2t(cStop - ga, f_WSTrad, slopeB);  % Dauer der Simulation, bis cStop erreich ist, also vorgegebener Winkel C
+    case 'angB'
+        tSim = bStop/nB;
+end
 % tSim = 64*pi;
 
 % analytische Berechnung
@@ -78,6 +86,10 @@ simT = simOut.tout;
 simAng = simOut.logsout.find('angC');       % accessing the handle by getting the element for the required name doesn't break, when adding or removing logged signals
 simAng = simAng.Values.Data';               % [rad]
 simAngRS = interp1(simT,simAng',anaT)';
+% winkel des werkzeugs
+simAngB = simOut.logsout.find('angB');
+simAngB = simAngB.Values.Data';
+simAngB = interp1(simT,simAngB',anaT)';
 % koordinaten des poi
 simCord = simOut.logsout.find('poi_xyz');
 simCord = simCord.Values.Data';             % [m] simulink returns an Nx3 matrix of vectors, we work with 3xN coordinat matricess
