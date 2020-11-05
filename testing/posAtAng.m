@@ -17,9 +17,9 @@ axH.XLim = xlims;
 [~,indsv] = min(abs(simAngB - sv));
 datatip(lH(3),'DataIndex',indsv);
 % calculated value
-if isa(valB, 'sym')
-    valB = double(valB(1));
+if isa(Bsol, 'sym')
+    Bsol = double(Bsol(1));
 end
-[~,indcv] = min(abs(simAngB-valB));
+[~,indcv] = min(abs(simAngB-Bsol));
 datatip(lH(3),'DataIndex',indcv);
 fprintf('Value of z coordinate at %.3f rad is %.3f mm.\n',sv,simCordRS(3,indsv));
