@@ -97,4 +97,4 @@ anaR.anaCord = traj';
 % get time
 fprintf('[ %s ] time to run script: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(overallT))
 % cleanup
-clearvars nSchritt simulinkT overallT vecT traj stopCrit temp cStop sig sigs cols
+clearvars nSchritt simulinkT overallT vecT traj stopCrit temp cStop sig sigs cols B
