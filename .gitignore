@@ -34,3 +34,4 @@ octave-workspace
 
 # specific to this repo
 *.stl
+*.mat
