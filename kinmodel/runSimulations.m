@@ -80,20 +80,28 @@ traj = trajvec;
 simOut = sim('ASM00021');
 fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
 %% Daten extrahieren
+anaR = table();         % ergebnisse der simulation in analytischer Zeit
+simR = table();         % ergebnisse der simulation in simulations zeit
 % zeit
-simT = simOut.tout;
+simR.t = simOut.tout;
+anaR.t = anaT;
 % winkel des werkstuecks
-simAng = simOut.logsout.find('angC');       % accessing the handle by getting the element for the required name doesn't break, when adding or removing logged signals
-simAng = simAng.Values.Data';               % [rad]
-simAngRS = interp1(simT,simAng',anaT)';
+simAngC = simOut.logsout.find('angC');       % accessing the handle by getting the element for the required name doesn't break, when adding or removing logged signals
+simR.AngC = simAngC.Values.Data;             % [rad]
+anaR.AngC = interp1(simR.t,simR.AngC,anaR.t);
+clearvars simAngC
 % winkel des werkzeugs
 simAngB = simOut.logsout.find('angB');
-simAngB = simAngB.Values.Data';
-simAngB = interp1(simT,simAngB',anaT)';
+simR.AngB = simAngB.Values.Data;
+anaR.AngB = interp1(simR.t,simR.AngB,anaR.t);
+clearvars simAngB
 % koordinaten des poi
 simCord = simOut.logsout.find('poi_xyz');
-simCord = simCord.Values.Data';             % [m] simulink returns an Nx3 matrix of vectors, we work with 3xN coordinat matricess
-simCord = simCord * 1e3; % [mm]
-simCordRS = interp1(simT,simCord',anaT)';
+simCord = simCord.Values.Data;             % [m] simulink returns an Nx3 matrix of vectors, we work with 3xN coordinat matricess
+simR.Cord = simCord * 1e3; % [mm]
+anaR.Cord = interp1(simR.t,simCord,anaR.t);
+clearvars simCord
+
+%% postprocessing
 % get time
 fprintf('[ %s ] time to run script: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(overallT))
