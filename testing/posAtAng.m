@@ -14,12 +14,12 @@ axH.XLim = xlims;
 
 %% numeric
 % start value
-[~,indsv] = min(abs(simAngB - sv));
+[~,indsv] = min(abs(simAngB - B0));
 datatip(lH(3),'DataIndex',indsv);
 % calculated value
-if isa(Bsol, 'sym')
+if isa(B, 'sym')
     Bsol = double(Bsol(1));
 end
 [~,indcv] = min(abs(simAngB-Bsol));
 datatip(lH(3),'DataIndex',indcv);
-fprintf('Value of z coordinate at %.3f rad is %.3f mm.\n',sv,simCordRS(3,indsv));
+fprintf('Value of z coordinate at %.3f rad is %.3f mm.\n',B0,simCordRS(3,indsv));
