@@ -1,9 +1,8 @@
 %% graphics
 [figH,axH] = getFigH(1,'WindowStyle','keep');
 set(0,'CurrentFigure',figH);
-cla;
 
-lH = plot(simAngB,simCordRS);
+lH = plot(anaR.angB,anaR.simCord);
 
 grid on; grid minor;
 legend('x','y','z');
@@ -14,12 +13,12 @@ axH.XLim = xlims;
 
 %% numeric
 % start value
-[~,indsv] = min(abs(simAngB - B0));
+[~,indsv] = min(abs(anaR.angB - B0));
 datatip(lH(3),'DataIndex',indsv);
 % calculated value
 if isa(B, 'sym')
-    Bsol = double(Bsol(1));
+    B = double(B(1));
 end
-[~,indcv] = min(abs(simAngB-Bsol));
+[~,indcv] = min(abs(anaR.angB - B));
 datatip(lH(3),'DataIndex',indcv);
-fprintf('Value of z coordinate at %.3f rad is %.3f mm.\n',B0,simCordRS(3,indsv));
+fprintf('Value of z coordinate at %.3f rad is %.3f mm.\n',B0,anaR.simCord(indsv,3));
