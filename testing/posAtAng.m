@@ -4,7 +4,7 @@ set(0,'CurrentFigure',figH);
 tH = tiledlayout(figH,5,1);
 
 axH(1) = nexttile(tH,1,[3 1]);
-lH(1) = line(axH,anaR.angB,anaR.simCord(:,3),'Color','#EDB120');
+lH(1) = line(axH,anaR.angB,anaR.anaCord(:,3),'Color','#EDB120');
 lH(2) = line(Bsol,z_soll,'color','#A2142F','Marker','.');
 legend('Z sim','Z iter');
 
