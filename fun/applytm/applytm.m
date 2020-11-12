@@ -33,8 +33,11 @@ if any([vecIsSym,matIsSym])
 else
     % apply transformation
     vecout = dim4(pagemtimes( TM , dim4(vecin,1,'forward')),1,'backward');
-    % return point cloud with one iteration (time) step
-    vecout = reshape(vecout,3,sVec(2)*sTM(3));
+    if sVec(2)==1 && sVec(3)==1 && sTM(3)>1
+        % fall 3
+        % return point cloud with one iteration (time) step
+        vecout = reshape(vecout,3,sVec(2)*sTM(3));
+    end
 end
 
 if sVec(1)==2
