@@ -57,13 +57,12 @@ B(1,1,:) = slopeB .* anaT;
 currB = 0;
 vecT = tic;
 TMgesamt = double(vpa(subs(Gesamt),16));
-trajvec = applytm(poi,TMgesamt);
+traj = applytm(poi,TMgesamt);
 fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(vecT))
 
 if false
     iterT = tic;
     trajIter = nan(3,length(anaT));
-    % 1:nSchritt+1
     for schritt = 1:length(anaT)
         currB = slopeB * anaT(schritt);
         B = currB;
@@ -76,24 +75,26 @@ end
 
 % Simulation
 simulinkT = tic;
-traj = trajvec;
 simOut = sim('ASM00021');
 fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
 %% Daten extrahieren
+anaR = table();         % ergebnisse der simulation in analytischer Zeit
+simR = table();         % ergebnisse der simulation in simulations zeit
+sigs = {'angC','angB','poi_xyz'};
+cols = {'angC','angB','simCord'};
 % zeit
-simT = simOut.tout;
-% winkel des werkstuecks
-simAng = simOut.logsout.find('angC');       % accessing the handle by getting the element for the required name doesn't break, when adding or removing logged signals
-simAng = simAng.Values.Data';               % [rad]
-simAngRS = interp1(simT,simAng',anaT)';
-% winkel des werkzeugs
-simAngB = simOut.logsout.find('angB');
-simAngB = simAngB.Values.Data';
-simAngB = interp1(simT,simAngB',anaT)';
-% koordinaten des poi
-simCord = simOut.logsout.find('poi_xyz');
-simCord = simCord.Values.Data';             % [m] simulink returns an Nx3 matrix of vectors, we work with 3xN coordinat matricess
-simCord = simCord * 1e3; % [mm]
-simCordRS = interp1(simT,simCord',anaT)';
+simR.t = simOut.tout;
+anaR.t = anaT;
+for sig = 1:numel(sigs)
+    temp = simOut.logsout.find(sigs(sig));
+    simR.(cols{sig}) = temp{1}.Values.Data;
+    anaR.(cols{sig}) = interp1(simR.t,simR.(cols{sig}),anaR.t);
+end
+% write analytic coordinates to table
+anaR.anaCord = traj';
+
+%% postprocessing
 % get time
 fprintf('[ %s ] time to run script: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(overallT))
+% cleanup
+clearvars nSchritt simulinkT overallT vecT traj stopCrit temp cStop sig sigs cols B
