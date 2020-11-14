@@ -14,9 +14,21 @@ function [vecout] = applytm(vecin,TM)
 % dim 1+2: tm für punkte oder punktewolke
 % dim 3: tms einzelner schritte einer zeitlichen entwicklung
 
+anySym = any([vecIsSym,matIsSym]);
+squeezeReq = false;
+
 % check tm size for squareness and size
 if diff(sTM(1:2))
-    error('Transformation dimensions incorrect')
+    if ~mod(sTM(2),4) && (sTM(2)/4) == sVec(2) && all([sTM(3), sVec(3)] == 1) && ~anySym
+        % spezieller fall bei dem zu jedem Punkt der 1d Wolke eine eigene 1d TM existiert
+        squeezeReq = true;
+        sVec = [sVec(1),sVec(3),sVec(2)];
+        vecin = reshape(vecin,sVec);
+        sTM = [sTM(1),4,sTM(2)/4];
+        TM = reshape(TM,sTM);
+    else
+        error('Transformation matrix dimensions incorrect.')
+    end
 else
     switch sTM(1)     % determine type of transformation matrix provided
         case 3          % if TM is 3d, make 4d
@@ -28,7 +40,7 @@ if all([sTM(3),sVec(3)] > 1) && diff([sVec(3),sTM(3)])
     error("Length of 3rd dimensions of Point and Transformation Matrix don't agree.")
 end
 
-if any([vecIsSym,matIsSym])
+if anySym
     vecout = TM * dim4(vecin,1,'forward');
 else
     % apply transformation
@@ -37,6 +49,8 @@ else
         % fall 3
         % return point cloud with one iteration (time) step
         vecout = reshape(vecout,3,sVec(2)*sTM(3));
+    elseif squeezeReq
+        vecout = squeeze(vecout);
     end
 end
 
