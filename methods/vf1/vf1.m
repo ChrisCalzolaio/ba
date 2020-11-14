@@ -51,13 +51,20 @@ LegStr = {'trajectory','seek points','simulation'};
 figH = getFigH(1,'WindowStyle','docked');
 set(0,'CurrentFigure',figH);
 tH = tiledlayout(figH,2,1);
+tH.Padding = 'compact';
+tH.TileSpacing = 'compact';
+
 axH(1) = nexttile(tH,1);
+axH(1).Title.String = 'Trajectory';
+axH(1).XTickLabel = [];
 axH(2) = nexttile(tH,2);
+axH(2).Title.String = 'Distance';
 % plot analytic trajectory, line trajectory handle
 lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
 % init line handles for seek and solution plots
 lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
 lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+lTH(4) = animatedline(axH(1), 'LineStyle','--','Color','r','MaximumNumPoints',2); % upper workpiece limit
 legend(LegStr);
 
 % plot analytic distance (radius) from centre axis
@@ -65,14 +72,16 @@ lRH(1) = line(axH(2), Bvec, dist,'Color','#EDB120');
 % init line handles for seek and solution plots
 lRH(2) = animatedline(axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
 lRH(3) = animatedline(axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+lRH(4) = animatedline(axH(2), 'LineStyle','--','Color','r','MaximumNumPoints',2); % outer workpiece limit
 legend(LegStr);
 
 % legend('Z sim','Z iter');
 % lH(3) = line(axH(2),shiftdim(Bsol(1,nP,:)),iters);
 % lh(4) = line(axH(3),shiftdim(Bsol(1,nP,:)),err);
 
-
 xlims = [0 2*pi];
+% scrollende x Achse
+scroll = [-6/4*pi 2/4*pi];
 linkaxes(axH,'x')
 axH(1).XLim = xlims;
 axSetup();
@@ -100,9 +109,6 @@ validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
-% plot simulation setup information
-line(axH(1),xlim,[zInt(2) zInt(2)],'LineStyle','--','Color','r');
-line(axH(2),xlim,[rWst rWst],'LineStyle','--','Color','r');
 
 % Definition der Funktion
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
@@ -118,9 +124,14 @@ while runSim
         zEst = traj(findBest(Bvec,B));
         rEst = dist(findBest(Bvec,B));
         fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
+        axH(1).XLim = max([xlims; B+scroll]);
+        addpoints(lTH(4),axH(1).XLim,[zInt(2) zInt(2)]);
+        addpoints(lRH(4),axH(1).XLim,[rWst rWst]);
+        
         addpoints(lTH(2),B,zEst);
         addpoints(lRH(2),B,rEst);
-        drawnow
+        
+        drawnow limitrate
     end
         
     while engaged   % Schnittschleife
@@ -163,8 +174,13 @@ while runSim
         % plotten des punkteds
         zEst = traj(findBest(Bvec,B(nP)));
         rEst = dist(findBest(Bvec,B(nP)));
+        
+        axH(1).XLim = max([xlims; B(nP)+scroll]);
+        addpoints(lTH(4),axH(1).XLim,[zInt(2) zInt(2)]);
+        
         addpoints(lTH(3),B(nP),zEst);
         addpoints(lRH(3),B(nP),rEst);
+        
         drawnow limitrate
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
