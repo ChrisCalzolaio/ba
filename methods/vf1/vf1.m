@@ -1,3 +1,4 @@
+clearvars
 %% Schritt 0:
 % Werkzeug
 m=3;                % Modul
@@ -39,22 +40,28 @@ B(1,1,:) = linspace(0,3*pi,1e2);
 TMgesamt = double(vpa(subs(mTM),16));
 traj = applytm(cWZ,TMgesamt);
 Bvec = shiftdim(B);                 % dimensions of Bvec to fit to traj
-nP = 1;                             % select point for plotting
-traj = shiftdim(traj(3,nP,:));      % only regard z-value of selected point for now
+nP = 2;                             % select point for plotting
+traj = reshape(traj(:,nP,:),3,[]);      % only regard the selected point for now
+dist = vecnorm(traj(1:2,:),2,1);
+traj = traj(3,:);      % only regard z-value of selected point for now
 clearvars B
 % plot
 figH = getFigH(1,'WindowStyle','docked');
 set(0,'CurrentFigure',figH);
-tH = tiledlayout(figH,5,1);
-axH(1) = nexttile(tH,1,[3 1]);
-axH(2) = nexttile(tH,4);
-axH(3) = nexttile(tH,5);
-linkaxes(axH,'x');
+tH = tiledlayout(figH,2,1);
+axH(1) = nexttile(tH,1);
+axH(2) = nexttile(tH,2);
 % plot analytic trajectory, line trajectory handle
 lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
 % init line handles for seek and solution plots
 lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
 lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+
+% plot analytic distance (radius) from centre axis
+lRH(1) = line(axH(2), Bvec, dist,'Color','#D95319');
+% init line handles for seek and solution plots
+lRH(2) = animatedline(axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
+lRH(3) = animatedline(axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
 
 % legend('Z sim','Z iter');
 % lH(3) = line(axH(2),shiftdim(Bsol(1,nP,:)),iters);
@@ -88,6 +95,8 @@ runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % plot simulation setup information
 line(axH(1),xlim,[zInt(2) zInt(2)],'LineStyle','--','Color','r');
+line(axH(2),xlim,[rWst rWst],'LineStyle','--','Color','r');
+
 % Definition der Funktion
 bfun = @(B,z_soll) pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
 
@@ -99,9 +108,11 @@ while runSim
     while not(engaged) % Seek-Loop
         B = B + dB;
         engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
-        zEst = traj(findBest(Bvec,B(nP)));
+        zEst = traj(findBest(Bvec,B));
+        rEst = dist(findBest(Bvec,B));
         fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
-        addpoints(lTH(2),B(nP),zEst);
+        addpoints(lTH(2),B,zEst);
+        addpoints(lRH(2),B,rEst);
         drawnow
     end
     
@@ -140,6 +151,7 @@ while runSim
         m = m+1;
     end
     % Schnitt ist beendet
+    B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
     B = B + pi/2;           % wir können um eine halbe Umdrehung springen
     m = 0;
     
