@@ -32,6 +32,7 @@ ga = 0;
 A = 0;
 
 mTM = createGesamt();   % Maschinentransformationsmatrix laden
+mTM = subs(mTM);
 
 %% analytische Trajektorie:
 [cWZ(1,:),cWZ(2,:),cWZ(3,:)] = pol2cart(phi_WZ,r_WZ,h_WZ);
@@ -40,12 +41,13 @@ B(1,1,:) = linspace(0,3*pi,1e2);
 TMgesamt = double(vpa(subs(mTM),16));
 traj = applytm(cWZ,TMgesamt);
 Bvec = shiftdim(B);                 % dimensions of Bvec to fit to traj
-nP = 2;                             % select point for plotting
+nP = 3;                             % select point for plotting
 traj = reshape(traj(:,nP,:),3,[]);      % only regard the selected point for now
 dist = vecnorm(traj(1:2,:),2,1);
 traj = traj(3,:);      % only regard z-value of selected point for now
 clearvars B
 % plot
+LegStr = {'trajectory','seek points','simulation'};
 figH = getFigH(1,'WindowStyle','docked');
 set(0,'CurrentFigure',figH);
 tH = tiledlayout(figH,2,1);
@@ -56,12 +58,14 @@ lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
 % init line handles for seek and solution plots
 lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
 lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+legend(LegStr);
 
 % plot analytic distance (radius) from centre axis
-lRH(1) = line(axH(2), Bvec, dist,'Color','#D95319');
+lRH(1) = line(axH(2), Bvec, dist,'Color','#EDB120');
 % init line handles for seek and solution plots
 lRH(2) = animatedline(axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
 lRH(3) = animatedline(axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+legend(LegStr);
 
 % legend('Z sim','Z iter');
 % lH(3) = line(axH(2),shiftdim(Bsol(1,nP,:)),iters);
@@ -140,6 +144,11 @@ while runSim
             if and(div>iterAbbr , engaged)
                 err(n) =  div;   % Fehler mitloggen
             else
+                zEst = traj(findBest(Bvec,B(nP)));
+                rEst = dist(findBest(Bvec,B(nP)));
+                addpoints(lTH(3),B(nP),zEst);
+                addpoints(lRH(3),B(nP),rEst);
+                drawnow limitrate
                 break
             end
             
