@@ -38,28 +38,32 @@ B = [];                 % reset B
 B(1,1,:) = linspace(0,3*pi,1e2);
 TMgesamt = double(vpa(subs(mTM),16));
 traj = applytm(cWZ,TMgesamt);
-Bvec = B;
+Bvec = shiftdim(B);                 % dimensions of Bvec to fit to traj
+nP = 1;                             % select point for plotting
+traj = shiftdim(traj(3,nP,:));      % only regard z-value of selected point for now
 clearvars B
 % plot
-figH = getFigH(1,'WindowStyle',docked);
+figH = getFigH(1,'WindowStyle','docked');
 set(0,'CurrentFigure',figH);
 tH = tiledlayout(figH,5,1);
 axH(1) = nexttile(tH,1,[3 1]);
 axH(2) = nexttile(tH,4);
 axH(3) = nexttile(tH,5);
 linkaxes(axH,'x');
-% plot analytic trajectory
-lH(1) = line(axH,shiftdim( Bvec),shiftdim(traj(3,nP,:)),'Color','#EDB120');
+% plot analytic trajectory, line trajectory handle
+lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
+% init line handles for seek and solution plots
+lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
+lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
 
 % legend('Z sim','Z iter');
 % lH(3) = line(axH(2),shiftdim(Bsol(1,nP,:)),iters);
 % lh(4) = line(axH(3),shiftdim(Bsol(1,nP,:)),err);
 
 
-xlims = [0 2];
+xlims = [0 2*pi];
 linkaxes(axH,'x')
-% axH(1).XLim = xlims;
-% axH.YLim = ylims;
+axH(1).XLim = xlims;
 axSetup();
 
 
@@ -94,8 +98,10 @@ while runSim
     while not(engaged) % Seek-Loop
         B = B + dB;
         engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
-        fprintf('Seeking. Angle %.2f°, Engagement: %s.\n',B,logStr{engaged + 1})
-        lH(2) = line(axH(1),shiftdim(Bsol(1,nP,:)),z_soll,'color','#A2142F','Marker','.');
+        zEst = traj(findBest(Bvec,B(nP)));
+        fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
+        addpoints(lTH(2),B(nP),zEst);
+        drawnow
     end
     
     while engaged   % Schnittschleife
