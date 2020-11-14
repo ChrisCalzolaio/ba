@@ -84,6 +84,7 @@ nSchritte = 1e2;        % diskrete Schritte in z-Richtung
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
+StopCriterion = 2*pi;
 % preallocate variables
 z_soll = linspace(zInt(2),zInt(1),nSchritte);
 Bsol  = NaN(1,size(cWZ,2),nSchritte);   % Lösungsvektor
@@ -91,9 +92,11 @@ iters = NaN(nSchritte,1);               % Vektor der notwendigen Iterationsschri
 err   = NaN(nSchritte,1);               % vector of errors
 zSolInd = NaN(nSchritte,1);             % vektor of Indizies der simulierten z Werte
 % init variables
-n = 0;                                  % absoluter zähler der simulierten Schritte
+n = 1;                                  % absoluter zähler der simulierten Schritte
 B = 0;                                  % Startwert für B
-m = 1;                                  % index für z_soll                                 
+m = 1;                                  % index für z_soll
+k = 1;
+validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
@@ -102,7 +105,7 @@ line(axH(1),xlim,[zInt(2) zInt(2)],'LineStyle','--','Color','r');
 line(axH(2),xlim,[rWst rWst],'LineStyle','--','Color','r');
 
 % Definition der Funktion
-bfun = @(B,z_soll) pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
+bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
 
 %% Schritt N:
 
@@ -119,53 +122,67 @@ while runSim
         addpoints(lRH(2),B,rEst);
         drawnow
     end
-    
+        
     while engaged   % Schnittschleife
         
-        n = n+1;                        % weiterer schritt wird simuliert
         l = 0;                          % noch keine Iterationen
         
         while true      % Iterationsschleife
             l = l+1;                    % weitere Iteration ist notwendig
             B0 = B;                     % Ausgangswinkel der Iteration ist der Winkel des letzten Schrittes
-            B  =  bfun(B0,z_soll(m));	% Berechnen des Winkels mit Startwert
+            B  =  bfun(B0,z_soll(m),k);	% Berechnen des Winkels mit Startwert
             
             % Hardstop: gesuchter Wert z_soll tiefer als erreichbar
             if ~isreal(B)
-                engaged = false;
+                validIter = false;
+                B = B0;                 % letzter berechneter Wert ist der gültige Endwinkel
                 warning('Gesuchter Punkt zu tief.')
-            else
-                engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
             end
             
             % Iterationsschleifen Abbruch
             % entweder nicht mehr im Eingriff, oder genauigkeit erreicht
             div = sum(abs(B-B0));     % error
-            if and(div>iterAbbr , engaged)
-                err(n) =  div;   % Fehler mitloggen
+            if div > iterAbbr
             else
-                zEst = traj(findBest(Bvec,B(nP)));
-                rEst = dist(findBest(Bvec,B(nP)));
-                addpoints(lTH(3),B(nP),zEst);
-                addpoints(lRH(3),B(nP),rEst);
-                drawnow limitrate
                 break
             end
             
         end
-        % Eregebnisser der Iteration wegschreiben
+
+        if not(validIter)
+            validIter = true;       % reset flag
+            engaged = false;        % durch erreichen eines ungültigen Iterationszustandes sind wir auch nicht mehr im Eingriff
+            break
+        end
+        % prüfen, ob wir noch im Eingriff sind
+        engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);        
+        if not(engaged)
+            break
+        end
+        n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
+        % plotten des punkteds
+        zEst = traj(findBest(Bvec,B(nP)));
+        rEst = dist(findBest(Bvec,B(nP)));
+        addpoints(lTH(3),B(nP),zEst);
+        addpoints(lRH(3),B(nP),rEst);
+        drawnow limitrate
+        % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
         iters(n) = l;
+        err(n) =  div;   % Fehler mitloggen
+        
         m = m+1;
     end
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
     B = B + pi/2;           % wir können um eine halbe Umdrehung springen
-    m = 0;
+    k = k+2;
+    m = 1;
     
     % simulation stop criterion
     curAngC = f_WSTrad * B + ga;
+    fprintf('Cut finished. Workpiece is at %.3f rad.\n', curAngC);
     if curAngC > StopCriterion
         runSim = false;
     end
