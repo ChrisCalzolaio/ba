@@ -86,7 +86,8 @@ m = 1;                                  % index für z_soll
 engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
-
+% plot simulation setup information
+line(axH(1),xlim,[zInt(2) zInt(2)],'LineStyle','--','Color','r');
 % Definition der Funktion
 bfun = @(B,z_soll) pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
 
