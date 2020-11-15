@@ -41,8 +41,9 @@ B(1,1,:) = linspace(0,3*pi,1e2);
 TMgesamt = double(vpa(subs(mTM),16));
 traj = applytm(cWZ,TMgesamt);
 Bvec = shiftdim(B);                 % dimensions of Bvec to fit to traj
-nP = 3;                             % select point for plotting
-traj = reshape(traj(:,nP,:),3,[]);      % only regard the selected point for now
+ptID = 3;                             % select point for plotting
+ptNm = numel(phi_WZ);
+traj = reshape(traj(:,ptID,:),3,[]);      % only regard the selected point for now
 dist = vecnorm(traj(1:2,:),2,1);
 traj = traj(3,:);      % only regard z-value of selected point for now
 clearvars B
@@ -56,7 +57,7 @@ logStr = {'no', 'yes'}; % logical string for log outputs
 StopCriterion = 2*pi;
 % preallocate variables
 z_soll = linspace(zInt(2),zInt(1),nSchritte);
-Bsol  = NaN(1,size(cWZ,2),nSchritte);   % Lösungsvektor
+Bsol  = NaN(1,ptNm,nSchritte);   % Lösungsvektor
 iters = NaN(nSchritte,1);               % Vektor der notwendigen Iterationsschritte
 err   = NaN(nSchritte,1);               % vector of errors
 zSolInd = NaN(nSchritte,1);             % vektor of Indizies der simulierten z Werte
@@ -70,24 +71,28 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % plot
-figH = getFigH(1,'WindowStyle','docked');
-set(0,'CurrentFigure',figH);
+figH = getFigH(2,'WindowStyle','docked');
+% simulation key figures
+set(0,'CurrentFigure',figH(1));
 dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 setappdata(dH,'canceling',0);
-tH = tiledlayout(figH,2,1);
+tH = tiledlayout(figH(1),2,1);
 tH.Padding = 'compact';
 tH.TileSpacing = 'compact';
 LegStr = {'trajectory','seek points','simulation'};
-pH = pan(figH);
+pH = pan(figH(1));
 pH.Motion = 'horizontal';
 pH.Enable = 'on';
-
+% create axes handles
 axH(1) = nexttile(tH,1);
 axH(1).Title.String = 'Trajectory';
 axH(1).XTickLabel = [];
 axH(2) = nexttile(tH,2);
 axH(2).Title.String = 'Distance';
 linkaxes(axH,'x')
+% 3d output
+set(0,'CurrentFigure',figH(2))
+ax3dH = axes(figH(2));
 axSetup();
 % plot analytic trajectory, line trajectory handle
 lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
@@ -113,9 +118,22 @@ axH.UserData.xlims = [0 2*pi];
 % scrollende x Achse
 axH.UserData.scroll = [-6/4*pi 2/4*pi];
 limH = [lTH(4) lRH(4)];
+% 3d output
+l3dHs = animatedline(ax3dH, 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
+% engaged traj
+for ln = 1:ptNm
+    l3dH(ln) = animatedline(ax3dH, 'LineStyle','-',   'Marker','.','Color','#A2142F');
+end
+xExt = 80;yExt = xExt;
+patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(max(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
+patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(min(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
 % Definition der Funktion
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
-tAng2zH = @(B,nP) z - c + B(nP) *fZ_WZrad + sin(A)*(y + Y_shift + B(nP)*fY_WZrad - h_WZ(nP)) + r_WZ(nP) * cos(A) * sin(B(nP) + phi_WZ(nP));
+tAng2zH = @(B,nP) z - c + B *fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ(nP)) + r_WZ(nP) * cos(A) * sin(B + phi_WZ(nP));
+posFun = @(B) [x.*cos(ga + B.*f_WSTrad) - b.*sin(ga + B.*f_WSTrad) - a.*cos(ga + B.*f_WSTrad) + B.*fX_WZrad.*cos(ga + B.*f_WSTrad) + r_WZ.*cos(phi_WZ).*(cos(ga + B.*f_WSTrad).*cos(B) - sin(ga + B.*f_WSTrad).*sin(A).*sin(B)) - r_WZ.*sin(phi_WZ).*(cos(ga + B.*f_WSTrad).*sin(B) + sin(ga + B.*f_WSTrad).*cos(B).*sin(A)) + Y_shift.*sin(ga + B.*f_WSTrad).*cos(A) - h_WZ.*sin(ga + B.*f_WSTrad).*cos(A) + y.*sin(ga + B.*f_WSTrad).*cos(A) + B.*fY_WZrad.*sin(ga + B.*f_WSTrad).*cos(A);... x-Komponente
+                a.*sin(ga + B.*f_WSTrad) - x.*sin(ga + B.*f_WSTrad) - b.*cos(ga + B.*f_WSTrad) - r_WZ.*cos(phi_WZ).*(sin(ga + B.*f_WSTrad).*cos(B) + cos(ga + B.*f_WSTrad).*sin(A).*sin(B)) - B.*fX_WZrad.*sin(ga + B.*f_WSTrad) + r_WZ.*sin(phi_WZ).*(sin(ga + B.*f_WSTrad).*sin(B) - cos(ga + B.*f_WSTrad).*cos(B).*sin(A)) + Y_shift.*cos(ga + B.*f_WSTrad).*cos(A) - h_WZ.*cos(ga + B.*f_WSTrad).*cos(A) + y.*cos(ga + B.*f_WSTrad).*cos(A) + B.*fY_WZrad.*cos(ga + B.*f_WSTrad).*cos(A);... y-Komponente
+                z - c + B.*fZ_WZrad + Y_shift.*sin(A) - h_WZ.*sin(A) + y.*sin(A) + B.*fY_WZrad.*sin(A) + r_WZ.*cos(A).*cos(B).*sin(phi_WZ) + r_WZ.*cos(A).*sin(B).*cos(phi_WZ)]; % z-Komponente
+                
 
 %% Schritt N:
 v1T = tic;
@@ -124,11 +142,13 @@ while runSim
     while not(engaged) % Seek-Loop
         B = B + dB;
         engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
-        zEst = tAng2zH(B,1);
+        zEst = tAng2zH(B,ptID);
         rEst = dist(findBest(Bvec,B));
         fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
         addpoints(lTH(2),B,zEst);
         addpoints(lRH(2),B,rEst);
+        aktPos = posFun(repmat(B,1,4));
+        addpoints(l3dHs,aktPos(1,:),aktPos(2,:),aktPos(3,:))
         scrollPlot(axH,limH,B);
     end
         
@@ -171,11 +191,15 @@ while runSim
         n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
         % plotten des punktes
 %         zEst = traj(findBest(Bvec,B(nP)));
-        zEst = tAng2zH(B,nP);
-        rEst = dist(findBest(Bvec,B(nP)));
-        addpoints(lTH(3),B(nP),zEst);
-        addpoints(lRH(3),B(nP),rEst);
-        scrollPlot(axH,limH,B(nP));
+        zEst = tAng2zH(B(ptID),ptID);
+        rEst = dist(findBest(Bvec,B(ptID)));
+        addpoints(lTH(3),B(ptID),zEst);
+        addpoints(lRH(3),B(ptID),rEst);
+        scrollPlot(axH,limH,B(ptID));
+        aktPos = posFun(B);
+        for ln = 1:ptNm
+            addpoints(l3dH(ln),aktPos(1,ln),aktPos(2,ln),aktPos(3,ln))
+        end
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
@@ -189,6 +213,9 @@ while runSim
     B = B + pi/2;           % wir können um eine halbe Umdrehung springen
     addpoints(lTH(3),B,NaN);
     addpoints(lRH(3),B,NaN);
+    for ln = 1:ptNm
+        addpoints(l3dH(ln),NaN,NaN,NaN)
+    end
     k = k+2;
     m = 1;
     
