@@ -124,7 +124,7 @@ while runSim
     while not(engaged) % Seek-Loop
         B = B + dB;
         engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
-        zEst = traj(findBest(Bvec,B));
+        zEst = tAng2zH(B,1);
         rEst = dist(findBest(Bvec,B));
         fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
         addpoints(lTH(2),B,zEst);
