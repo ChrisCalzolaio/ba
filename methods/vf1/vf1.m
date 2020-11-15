@@ -78,6 +78,9 @@ tH = tiledlayout(figH,2,1);
 tH.Padding = 'compact';
 tH.TileSpacing = 'compact';
 LegStr = {'trajectory','seek points','simulation'};
+pH = pan(figH);
+pH.Motion = 'horizontal';
+pH.Enable = 'on';
 
 axH(1) = nexttile(tH,1);
 axH(1).Title.String = 'Trajectory';
@@ -182,6 +185,8 @@ while runSim
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
     B = B + pi/2;           % wir können um eine halbe Umdrehung springen
+    addpoints(lTH(3),B,NaN);
+    addpoints(lRH(3),B,NaN);
     k = k+2;
     m = 1;
     
