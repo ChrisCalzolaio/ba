@@ -70,12 +70,14 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % plot
-LegStr = {'trajectory','seek points','simulation'};
 figH = getFigH(1,'WindowStyle','docked');
 set(0,'CurrentFigure',figH);
+dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+setappdata(dH,'canceling',0);
 tH = tiledlayout(figH,2,1);
 tH.Padding = 'compact';
 tH.TileSpacing = 'compact';
+LegStr = {'trajectory','seek points','simulation'};
 
 axH(1) = nexttile(tH,1);
 axH(1).Title.String = 'Trajectory';
@@ -189,7 +191,11 @@ while runSim
     if curAngC > StopCriterion
         runSim = false;
     end
+    if getappdata(dH,'canceling')
+        break
+    end
 end
 
 % Ausgabe
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
+delete(dH);
