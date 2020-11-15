@@ -184,7 +184,7 @@ while runSim
     m = 1;
     
     % simulation stop criterion
-    curAngC = f_WSTrad * B + ga;
+    curAngC = abs(f_WSTrad * B + ga);
     fprintf('Cut finished. Workpiece is at %.3f rad.\n', curAngC);
     if curAngC > StopCriterion
         runSim = false;
