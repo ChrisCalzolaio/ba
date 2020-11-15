@@ -115,6 +115,7 @@ axH.UserData.scroll = [-6/4*pi 2/4*pi];
 limH = [lTH(4) lRH(4)];
 % Definition der Funktion
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
+tAng2zH = @(B,nP) z - c + B(nP) *fZ_WZrad + sin(A)*(y + Y_shift + B(nP)*fY_WZrad - h_WZ(nP)) + r_WZ(nP) * cos(A) * sin(B(nP) + phi_WZ(nP));
 
 %% Schritt N:
 v1T = tic;
@@ -169,7 +170,8 @@ while runSim
         end
         n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
         % plotten des punktes
-        zEst = traj(findBest(Bvec,B(nP)));
+%         zEst = traj(findBest(Bvec,B(nP)));
+        zEst = tAng2zH(B,nP);
         rEst = dist(findBest(Bvec,B(nP)));
         addpoints(lTH(3),B(nP),zEst);
         addpoints(lRH(3),B(nP),rEst);
