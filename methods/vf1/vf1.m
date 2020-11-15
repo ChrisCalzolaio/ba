@@ -93,6 +93,7 @@ linkaxes(axH,'x')
 % 3d output
 set(0,'CurrentFigure',figH(2))
 ax3dH = axes(figH(2));
+axis vis3d;
 axSetup();
 % plot analytic trajectory, line trajectory handle
 lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
@@ -127,6 +128,9 @@ end
 xExt = 80;yExt = xExt;
 patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(max(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
 patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(min(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
+[cWkstx,cWksty] = cylinder(rWst,1e2);
+cWkstz = repmat(zInt',1,size(cWkstx,2));
+surface(ax3dH,cWkstx,cWksty,cWkstz,'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
 % Definition der Funktion
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
 tAng2zH = @(B,nP) z - c + B *fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ(nP)) + r_WZ(nP) * cos(A) * sin(B + phi_WZ(nP));
