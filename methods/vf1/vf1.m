@@ -210,7 +210,7 @@ while runSim
     end
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
-    B = B + pi/2;           % wir können um eine halbe Umdrehung springen
+    B = B + pi;             % wir können um eine halbe Umdrehung springen
     addpoints(lTH(3),B,NaN);
     addpoints(lRH(3),B,NaN);
     for ln = 1:ptNm
