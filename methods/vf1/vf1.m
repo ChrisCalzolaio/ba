@@ -121,6 +121,7 @@ axH.UserData.scroll = [-6/4*pi 2/4*pi];
 limH = [lTH(4) lRH(4)];
 % 3d output
 l3dHs = animatedline(ax3dH, 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
+l3dHc = animatedline(ax3dH, 'LineStyle','none','Marker','*','Color','y'); % cut candidate
 % engaged traj
 for ln = 1:ptNm
     l3dH(ln) = animatedline(ax3dH, 'LineStyle','-',   'Marker','.','Color','#A2142F');
@@ -188,6 +189,8 @@ while runSim
             break
         end
         % prüfen, ob wir noch im Eingriff sind
+        cutC = posFun(B);
+        addpoints(l3dHc,cutC(1,:),cutC(2,:),cutC(3,:));
         engaged = checkEng(posFun(B),zInt,rWst);
         if not(engaged)
             break
