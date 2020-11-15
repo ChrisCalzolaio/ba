@@ -1,4 +1,4 @@
-function eng = checkEng(p,TM,zInt,r)
+function eng = checkEng(p,zInt,r)
 %CHECKENG Summary of this function goes here
 %   p: Pointcloud
 %   TM: transformation matrix
@@ -6,8 +6,6 @@ function eng = checkEng(p,TM,zInt,r)
 %   r: radius of workpiece
 
 eng = false;
-% calculate transformed points
-p = applytm(p,TM);
 
 % check for z interval
 if any( min(p(3,:)) <= max(zInt), max(p(3,:)) >= min(zInt) )

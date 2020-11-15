@@ -145,7 +145,7 @@ while runSim
     
     while not(engaged) % Seek-Loop
         B = B + dB;
-        engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
+        engaged = checkEng(posFun(B),zInt,rWst);
         zEst = tAng2zH(B,ptID);
         rEst = dist(findBest(Bvec,B));
         fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
@@ -188,7 +188,7 @@ while runSim
             break
         end
         % prüfen, ob wir noch im Eingriff sind
-        engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);        
+        engaged = checkEng(posFun(B),zInt,rWst);
         if not(engaged)
             break
         end
