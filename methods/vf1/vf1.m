@@ -46,37 +46,6 @@ traj = reshape(traj(:,nP,:),3,[]);      % only regard the selected point for now
 dist = vecnorm(traj(1:2,:),2,1);
 traj = traj(3,:);      % only regard z-value of selected point for now
 clearvars B
-% plot
-LegStr = {'trajectory','seek points','simulation'};
-figH = getFigH(1,'WindowStyle','docked');
-set(0,'CurrentFigure',figH);
-tH = tiledlayout(figH,2,1);
-axH(1) = nexttile(tH,1);
-axH(2) = nexttile(tH,2);
-% plot analytic trajectory, line trajectory handle
-lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
-% init line handles for seek and solution plots
-lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
-lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
-legend(LegStr);
-
-% plot analytic distance (radius) from centre axis
-lRH(1) = line(axH(2), Bvec, dist,'Color','#EDB120');
-% init line handles for seek and solution plots
-lRH(2) = animatedline(axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
-lRH(3) = animatedline(axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
-legend(LegStr);
-
-% legend('Z sim','Z iter');
-% lH(3) = line(axH(2),shiftdim(Bsol(1,nP,:)),iters);
-% lh(4) = line(axH(3),shiftdim(Bsol(1,nP,:)),err);
-
-
-xlims = [0 2*pi];
-linkaxes(axH,'x')
-axH(1).XLim = xlims;
-axSetup();
-
 
 %% Simulations-Setup
 zInt = [15 90];         % [zmin zmax]
@@ -100,27 +69,67 @@ validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
-% plot simulation setup information
-line(axH(1),xlim,[zInt(2) zInt(2)],'LineStyle','--','Color','r');
-line(axH(2),xlim,[rWst rWst],'LineStyle','--','Color','r');
+% plot
+figH = getFigH(1,'WindowStyle','docked');
+set(0,'CurrentFigure',figH);
+dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+setappdata(dH,'canceling',0);
+tH = tiledlayout(figH,2,1);
+tH.Padding = 'compact';
+tH.TileSpacing = 'compact';
+LegStr = {'trajectory','seek points','simulation'};
+pH = pan(figH);
+pH.Motion = 'horizontal';
+pH.Enable = 'on';
 
+axH(1) = nexttile(tH,1);
+axH(1).Title.String = 'Trajectory';
+axH(1).XTickLabel = [];
+axH(2) = nexttile(tH,2);
+axH(2).Title.String = 'Distance';
+linkaxes(axH,'x')
+axSetup();
+% plot analytic trajectory, line trajectory handle
+lTH(1) = line(axH(1), Bvec, traj,'Color','#EDB120');
+% init line handles for seek and solution plots
+lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
+lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+lTH(4) = animatedline(axH(1), 'LineStyle','--','Color','r','MaximumNumPoints',2); % upper workpiece limit
+lTH(4).UserData.zInt = zInt(2);
+legend(LegStr);
+
+% plot analytic distance (radius) from centre axis
+lRH(1) = line(axH(2), Bvec, dist,'Color','#EDB120');
+% init line handles for seek and solution plots
+lRH(2) = animatedline(axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
+lRH(3) = animatedline(axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
+lRH(4) = animatedline(axH(2), 'LineStyle','--','Color','r','MaximumNumPoints',2); % outer workpiece limit
+lRH(4).UserData.zInt = rWst;
+legend(LegStr);
+% scrollender plot
+axH = axH(1);       % only the main axes handle is required
+% default
+axH.UserData.xlims = [0 2*pi];
+% scrollende x Achse
+axH.UserData.scroll = [-6/4*pi 2/4*pi];
+limH = [lTH(4) lRH(4)];
 % Definition der Funktion
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
+tAng2zH = @(B,nP) z - c + B(nP) *fZ_WZrad + sin(A)*(y + Y_shift + B(nP)*fY_WZrad - h_WZ(nP)) + r_WZ(nP) * cos(A) * sin(B(nP) + phi_WZ(nP));
 
 %% Schritt N:
-
 v1T = tic;
 while runSim
     
     while not(engaged) % Seek-Loop
         B = B + dB;
         engaged = checkEng(cWZ,double(vpa(subs(mTM))),zInt,rWst);
-        zEst = traj(findBest(Bvec,B));
+        zEst = tAng2zH(B,1);
         rEst = dist(findBest(Bvec,B));
         fprintf('Seeking. Angle %.3f rad @ z: %.3f, Engagement: %s.\n',B,zEst,logStr{engaged + 1})
         addpoints(lTH(2),B,zEst);
         addpoints(lRH(2),B,rEst);
-        drawnow
+        scrollPlot(axH,limH,B);
     end
         
     while engaged   % Schnittschleife
@@ -160,12 +169,13 @@ while runSim
             break
         end
         n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
-        % plotten des punkteds
-        zEst = traj(findBest(Bvec,B(nP)));
+        % plotten des punktes
+%         zEst = traj(findBest(Bvec,B(nP)));
+        zEst = tAng2zH(B,nP);
         rEst = dist(findBest(Bvec,B(nP)));
         addpoints(lTH(3),B(nP),zEst);
         addpoints(lRH(3),B(nP),rEst);
-        drawnow limitrate
+        scrollPlot(axH,limH,B(nP));
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
@@ -177,16 +187,22 @@ while runSim
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
     B = B + pi/2;           % wir können um eine halbe Umdrehung springen
+    addpoints(lTH(3),B,NaN);
+    addpoints(lRH(3),B,NaN);
     k = k+2;
     m = 1;
     
     % simulation stop criterion
-    curAngC = f_WSTrad * B + ga;
+    curAngC = abs(f_WSTrad * B + ga);
     fprintf('Cut finished. Workpiece is at %.3f rad.\n', curAngC);
     if curAngC > StopCriterion
         runSim = false;
+    end
+    if getappdata(dH,'canceling')
+        break
     end
 end
 
 % Ausgabe
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
+delete(dH);
