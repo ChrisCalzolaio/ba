@@ -156,6 +156,22 @@ while runSim
         addpoints(l3dHs,aktPos(1,:),aktPos(2,:),aktPos(3,:))
         scrollPlot(axH,limH,B);
     end
+    
+    while true
+        B0 = B;                     % Ausgangswinkel der Iteration ist der Winkel des letzten Schrittes
+        B  =  bfun(B0,z_soll(m),k);	% Berechnen des Winkels mit Startwert
+        cutC = posFun(B);
+        addpoints(l3dHc,cutC(1,:),cutC(2,:),cutC(3,:));
+        engaged = checkEng(posFun(B),zInt,rWst);
+        if engaged
+            prevm = m;              % save z-height we engaged at, this is where we will start next time
+            break
+        else
+            m = m+1;
+        end
+    end
+        
+        
         
     while engaged   % Schnittschleife
         
@@ -189,8 +205,6 @@ while runSim
             break
         end
         % prüfen, ob wir noch im Eingriff sind
-        cutC = posFun(B);
-        addpoints(l3dHc,cutC(1,:),cutC(2,:),cutC(3,:));
         engaged = checkEng(posFun(B),zInt,rWst);
         if not(engaged)
             break
@@ -218,13 +232,13 @@ while runSim
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
     B = B + pi;             % wir können um eine halbe Umdrehung springen
+    m = prevm;              % wieder bei der letzten obersten Ebene beginnen
+    k = k+2;
     addpoints(lTH(3),B,NaN);
     addpoints(lRH(3),B,NaN);
     for ln = 1:ptNm
         addpoints(l3dH(ln),NaN,NaN,NaN)
     end
-    k = k+2;
-    m = 1;
     
     % simulation stop criterion
     curAngC = abs(f_WSTrad * B + ga);
