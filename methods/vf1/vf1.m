@@ -70,62 +70,16 @@ validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
-% plot
-figH = getFigH(2,'WindowStyle','docked');
-% simulation key figures
-set(0,'CurrentFigure',figH(1));
+
+
 dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 setappdata(dH,'canceling',0);
-tH = tiledlayout(figH(1),2,1);
-tH.Padding = 'compact';
-tH.TileSpacing = 'compact';
-LegStr = {'trajectory','seek points','simulation'};
-pH = pan(figH(1));
-pH.Motion = 'horizontal';
-pH.Enable = 'on';
-% create axes handles
-axH(1) = nexttile(tH,1);
-axH(1).Title.String = 'Trajectory';
-axH(1).XTickLabel = [];
-axH(2) = nexttile(tH,2);
-axH(2).Title.String = 'Distance';
-linkaxes(axH,'x')
-% 3d output
-set(0,'CurrentFigure',figH(2))
-ax3dH = axes(figH(2));
-axis vis3d;
-axSetup();
-% plot analytic trajectory, line trajectory handle
-lTH(1) = animatedline(axH(1),'Color','#EDB120');
-% init line handles for seek and solution plots
-lTH(2) = animatedline(axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
-lTH(3) = animatedline(axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
-lTH(4) = animatedline(axH(1), 'LineStyle','--','Color','r','MaximumNumPoints',2); % upper workpiece limit
-lTH(4).UserData.zInt = zInt(2);
-legend(LegStr);
+% plot
 
-% plot analytic distance (radius) from centre axis
-lRH(1) = animatedline(axH(2),'Color','#EDB120');
-% init line handles for seek and solution plots
-lRH(2) = animatedline(axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
-lRH(3) = animatedline(axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
-lRH(4) = animatedline(axH(2), 'LineStyle','--','Color','r','MaximumNumPoints',2); % outer workpiece limit
-lRH(4).UserData.zInt = rWst;
-legend(LegStr);
-% scrollender plot
-axH = axH(1);       % only the main axes handle is required
-% default
-axH.UserData.xlims = [0 2*pi];
-% scrollende x Achse
-axH.UserData.scroll = [-6/4*pi 2/4*pi];
-limH = [lTH(4) lRH(4)];
 % 3d output
-l3dHs = animatedline(ax3dH, 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
-l3dHc = animatedline(ax3dH, 'LineStyle','none','Marker','*','Color','y'); % cut candidate
-% engaged traj
-for ln = 1:ptNm
-    l3dH(ln) = animatedline(ax3dH, 'LineStyle','-',   'Marker','.','Color','#A2142F');
-end
+
+
+
 xExt = 80;yExt = xExt;
 patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(max(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
 patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(min(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
