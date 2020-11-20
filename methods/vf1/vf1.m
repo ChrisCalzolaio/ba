@@ -71,6 +71,7 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 
+pltSim = plotSimulation(zInt,rWst,ptNm);
 
 dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 setappdata(dH,'canceling',0);
@@ -81,8 +82,7 @@ setappdata(dH,'canceling',0);
 
 
 xExt = 80;yExt = xExt;
-patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(max(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
-patch(ax3dH,'XData',[xExt -xExt -xExt xExt],'YData',[yExt yExt -yExt -yExt],'ZData',repmat(min(zInt),1,4),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
+
 [cWkstx,cWksty] = cylinder(rWst,1e2);
 cWkstz = repmat(zInt',1,size(cWkstx,2));
 surface(ax3dH,cWkstx,cWksty,cWkstz,'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
