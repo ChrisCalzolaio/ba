@@ -65,12 +65,12 @@ elseif isvector(extension)
 end
 
 % coordinate system
-coordOffs = eye(3);     % transformation matrix
+coordOffs = eye(4);     % transformation matrix
 switch p.Results.coordinateSystem
     case {'lowerleft','ll'}
         % do nothing
     case {'center','centre','c'}
-        coordOffs(end,1:2) = -(extension./2);
+        coordOffs = trvecHomTform( -[extension',0]./2 );
 end
 
 % density
