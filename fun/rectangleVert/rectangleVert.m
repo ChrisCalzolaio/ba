@@ -51,17 +51,19 @@ parse(p,varargin{:});
 %% process
 % extension
 extension = p.Results.extension;
+z = 0;
 if isscalar(extension)
     % when the extension we are given is a scalar, the shape of the rectangle
     % vertices returned is square
     extension(2,1) = extension;
 elseif isvector(extension)
+    extension = extension(:);   % make sure the extension parameter is a column vector
     % when the extensions we are given is a vector, only the use the first
     % two elements, the function is limited to 2d
-    extension = extension(1:2);
-    if isrow(extension)          % make sure the extension parameter is a column vector
-        extension = extension';
+    if numel(extension) == 3 && p.Results.dimension == 3
+        z = extension(3);
     end
+    extension = extension(1:2);
 end
 
 % coordinate system
@@ -70,7 +72,7 @@ switch p.Results.coordinateSystem
     case {'lowerleft','ll'}
         % do nothing
     case {'center','centre','c'}
-        coordOffs = trvecHomTform( -[extension',0]./2 );
+        coordOffs = trvecHomTform( [-extension'./2 , z] );
 end
 
 % density
@@ -88,6 +90,7 @@ vertices =[[xvals;zeros(1,density)],...
            extension,...
            [fliplr(xvals);repmat(extension(2),1,density)],...
            [zeros(1,density); fliplr(yvals)]];
+vertices = [vertices;zeros(1,size(vertices,2))];
 % apply transformation
 vert = applytm(vertices,coordOffs);
 
@@ -99,9 +102,9 @@ if strcmp(p.Results.loop,'open')
     vertices = vert(:,1:end-1);
     connmap = connmap(1:end-1);
 end
-% apply dimension characteristic
-if p.Results.dimension == 3
-    vertices(3,:) = zeros(1,size(vertices,2));
+% remove unwanted third dimension
+if p.Results.dimension == 2
+    vertices = vertices(1:2,:);
 end
 
 %% return values
