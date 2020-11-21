@@ -98,7 +98,7 @@ classdef plotSimulation
                 patch(obj.ax3dH,'XData',v(1,:),'YData',v(2,:),'ZData',v(3,:),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
             end
             v = obj.wkpc.cyl;
-            surface(obj.ax3dH,v(1,:),v(2,:),v(3,:),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
+            surface(obj.ax3dH,v(1:2,:),v(3:4,:),v(5:6,:),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
         end
         
         function wkpc = makeLimVert(obj)
