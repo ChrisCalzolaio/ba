@@ -31,9 +31,6 @@ ga = 0;
 
 A = 0;
 
-mTM = createGesamt();   % Maschinentransformationsmatrix laden
-mTM = subs(mTM);
-
 %% Simulations-Setup
 ptNm = numel(phi_WZ);
 ptID = 3;                             % select point for plotting
