@@ -71,23 +71,10 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 
-pltSim = plotSimulation(zInt,rWst,ptNm);
-
 dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
 setappdata(dH,'canceling',0);
-% plot
 
-% 3d output
-
-
-
-xExt = 80;yExt = xExt;
-
-[cWkstx,cWksty] = cylinder(rWst,1e2);
-cWkstz = repmat(zInt',1,size(cWkstx,2));
-surface(ax3dH,cWkstx,cWksty,cWkstz,'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
 % Definition der Funktion
-
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
 % tool angle to z-height
 tAng2zH = @(B,nP) z - c + B *fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ(nP)) + r_WZ(nP) * cos(A) * sin(B + phi_WZ(nP));
@@ -101,21 +88,16 @@ posFunID = @(B,ptID) [x.*cos(ga + B.*f_WSTrad) - b.*sin(ga + B.*f_WSTrad) - a.*c
 % distance of tool point from workpiece centre depending on tool angle
 distWst = @(B,ptID) sqrt((a.*sin(ga + B.*f_WSTrad) - x.*sin(ga + B.*f_WSTrad) - b.*cos(ga + B.*f_WSTrad) - r_WZ(ptID).*cos(phi_WZ(ptID)).*(sin(ga + B.*f_WSTrad).*cos(B) + cos(ga + B.*f_WSTrad).*sin(A).*sin(B)) - B.*fX_WZrad.*sin(ga + B.*f_WSTrad) + r_WZ(ptID).*sin(phi_WZ(ptID)).*(sin(ga + B.*f_WSTrad).*sin(B) - cos(ga + B.*f_WSTrad).*cos(B).*sin(A)) + Y_shift.*cos(ga + B.*f_WSTrad).*cos(A) - h_WZ(ptID).*cos(ga + B.*f_WSTrad).*cos(A) + y.*cos(ga + B.*f_WSTrad).*cos(A) + B.*fY_WZrad.*cos(ga + B.*f_WSTrad).*cos(A)).^2 + (x.*cos(ga + B.*f_WSTrad) - b.*sin(ga + B.*f_WSTrad) - a.*cos(ga + B.*f_WSTrad) + B.*fX_WZrad.*cos(ga + B.*f_WSTrad) + r_WZ(ptID).*cos(phi_WZ(ptID)).*(cos(ga + B.*f_WSTrad).*cos(B) - sin(ga + B.*f_WSTrad).*sin(A).*sin(B)) - r_WZ(ptID).*sin(phi_WZ(ptID)).*(cos(ga + B.*f_WSTrad).*sin(B) + sin(ga + B.*f_WSTrad).*cos(B).*sin(A)) + Y_shift.*sin(ga + B.*f_WSTrad).*cos(A) - h_WZ(ptID).*sin(ga + B.*f_WSTrad).*cos(A) + y.*sin(ga + B.*f_WSTrad).*cos(A) + B.*fY_WZrad.*sin(ga + B.*f_WSTrad).*cos(A)).^2);
 
+pltSim = plotSimulation(zInt,rWst,ptNm,ptID,bfun,tAng2zH,posFun,distWst);
 %% Schritt N:
 v1T = tic;
 while runSim
     % plot trajectory
-    bvec = linspace(B,B+2*pi,1e2);
-    addpoints(lTH(1),bvec,tAng2zH(bvec,ptID));
-    addpoints(lRH(1),bvec,distWst(bvec,ptID));
+    pltSim.plotTraj(B);
     while not(engaged) % Seek-Loop
         B = B + dB;
         engaged = checkEng(posFun(B),zInt,rWst);
-        addpoints(lTH(2),B,tAng2zH(B,ptID));
-        addpoints(lRH(2),B,distWst(B,ptID));
-        aktPos = posFun(repmat(B,1,4));
-        addpoints(l3dHs,aktPos(1,:),aktPos(2,:),aktPos(3,:))
-        scrollPlot(axH,limH,B);
+        pltSim.plotSeek(B);
     end
     
     while true
