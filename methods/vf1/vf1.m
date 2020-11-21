@@ -34,21 +34,9 @@ A = 0;
 mTM = createGesamt();   % Maschinentransformationsmatrix laden
 mTM = subs(mTM);
 
-%% analytische Trajektorie:
-[cWZ(1,:),cWZ(2,:),cWZ(3,:)] = pol2cart(phi_WZ,r_WZ,h_WZ);
-B = [];                 % reset B
-B(1,1,:) = linspace(0,3*pi,1e2);
-TMgesamt = double(vpa(subs(mTM),16));
-traj = applytm(cWZ,TMgesamt);
-Bvec = shiftdim(B);                 % dimensions of Bvec to fit to traj
-ptID = 3;                             % select point for plotting
-ptNm = numel(phi_WZ);
-traj = reshape(traj(:,ptID,:),3,[]);      % only regard the selected point for now
-dist = vecnorm(traj(1:2,:),2,1);
-traj = traj(3,:);      % only regard z-value of selected point for now
-clearvars B
-
 %% Simulations-Setup
+ptNm = numel(phi_WZ);
+ptID = 3;                             % select point for plotting
 zInt = [15 90];         % [zmin zmax]
 nSchritte = 1e2;        % diskrete Schritte in z-Richtung
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
