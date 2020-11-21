@@ -114,10 +114,6 @@ classdef plotSimulation
             addpoints(obj.lRH(2),B,obj.distWst(B,obj.ptID));
             aktPos = obj.posFun(repmat(B,1,4));
             addpoints(obj.l3dHs,aktPos(1,:),aktPos(2,:),aktPos(3,:))
-            scrollPlot(obj,B);
-        end
-        
-        function obj = scrollPlot(obj,x)
             obj.axH.XLim = max([obj.xscope; x+obj.scroll]);
             for n = 1:numel(obj.limH)
                 limval = obj.limH(n).UserData.limval;
@@ -126,7 +122,7 @@ classdef plotSimulation
             
             drawnow limitrate
         end
-        
+                
         function plotTraj(obj,B)
             bvec = linspace(B,B+2*pi,1e2);
             addpoints(obj.lTH(1),bvec,obj.tAng2zH(bvec,obj.ptID));
@@ -135,4 +131,3 @@ classdef plotSimulation
     end
     
 end
-
