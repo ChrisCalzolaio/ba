@@ -108,8 +108,7 @@ while runSim
             prevm = m;              % save z-height we engaged at, this is where we will start next time
             break
         else
-            cutC = posFun(B);
-            addpoints(l3dHc,cutC(1,:),cutC(2,:),cutC(3,:));
+            pltSim.plotCandidate(B);
             m = m+1;
         end
     end
@@ -154,13 +153,7 @@ while runSim
         end
         n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
         % plotten des punktes
-        addpoints(lTH(3),B(ptID), tAng2zH(B(ptID),ptID));
-        addpoints(lRH(3),B(ptID), distWst(B(ptID),ptID));
-        scrollPlot(axH,limH,B(ptID));
-        aktPos = posFun(B);
-        for ln = 1:ptNm
-            addpoints(l3dH(ln),aktPos(1,ln),aktPos(2,ln),aktPos(3,ln))
-        end
+        pltSim.plotCut(B);
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
@@ -174,11 +167,7 @@ while runSim
     B = B + pi;             % wir können um eine halbe Umdrehung springen
     m = prevm;              % wieder bei der letzten obersten Ebene beginnen
     k = k+2;
-    addpoints(lTH(3),B,NaN);
-    addpoints(lRH(3),B,NaN);
-    for ln = 1:ptNm
-        addpoints(l3dH(ln),NaN,NaN,NaN)
-    end
+    pltSim.finishedCut(B);
     
     % simulation stop criterion
     curAngC = abs(f_WSTrad * B + ga);

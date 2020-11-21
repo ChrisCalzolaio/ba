@@ -11,7 +11,7 @@ classdef plotSimulation
         limH = gobjects(2,1);   % line hanlde, limits of workpiece extensions
         l3dH                    % line handle, 3d plot, trajectories of tool points
         l3dHs       % line handle, 3d plot, seek points
-        l3dHc       % line handle, 3d plot, cut points
+        l3dHc       % line handle, 3d plot, candidate points
         LegStr = {'trajectory','seek points','simulation'};
         zInt
         rWst
@@ -113,20 +113,46 @@ classdef plotSimulation
             addpoints(obj.lTH(2),B,obj.tAng2zH(B,obj.ptID));
             addpoints(obj.lRH(2),B,obj.distWst(B,obj.ptID));
             aktPos = obj.posFun(repmat(B,1,4));
-            addpoints(obj.l3dHs,aktPos(1,:),aktPos(2,:),aktPos(3,:))
-            obj.axH.XLim = max([obj.xscope; x+obj.scroll]);
-            for n = 1:numel(obj.limH)
-                limval = obj.limH(n).UserData.limval;
-                addpoints(obj.limH(n),obj.axH.XLim,[limval limval]);
-            end
-            
-            drawnow limitrate
+            addpoints(obj.l3dHs,aktPos(1,:),aktPos(2,:),aktPos(3,:));
+            obj.scrollPlot(B);
         end
                 
         function plotTraj(obj,B)
             bvec = linspace(B,B+2*pi,1e2);
             addpoints(obj.lTH(1),bvec,obj.tAng2zH(bvec,obj.ptID));
             addpoints(obj.lRH(1),bvec,obj.distWst(bvec,obj.ptID));
+        end
+        
+        function plotCandidate(obj,B)
+            cutC = obj.posFun(B);
+            addpoints(obj.l3dHc,cutC(1,:),cutC(2,:),cutC(3,:));
+        end
+        
+        function plotCut(obj,B)
+            addpoints(obj.lTH(3),B(obj.ptID), obj.tAng2zH(B(obj.ptID),obj.ptID));
+            addpoints(obj.lRH(3),B(obj.ptID), obj.distWst(B(obj.ptID),obj.ptID));
+            obj.scrollPlot(B(obj.ptID));
+            aktPos = obj.posFun(B);
+            for ln = 1:obj.numPt
+                addpoints(obj.l3dH(ln),aktPos(1,ln),aktPos(2,ln),aktPos(3,ln))
+            end
+        end
+        
+        function scrollPlot(obj,x)
+            obj.axH.XLim = max([obj.xscope; x+obj.scroll]);
+            for n = 1:numel(obj.limH)
+                limval = obj.limH(n).UserData.limval;
+                addpoints(obj.limH(n),obj.axH.XLim,[limval limval]);
+            end
+            drawnow limitrate
+        end
+        
+        function finishedCut(obj,B)
+            addpoints(obj.lTH(3),B,NaN);
+            addpoints(obj.lRH(3),B,NaN);
+            for ln = 1:obj.numPt
+                addpoints(obj.l3dH(ln),NaN,NaN,NaN)
+            end
         end
     end
     
