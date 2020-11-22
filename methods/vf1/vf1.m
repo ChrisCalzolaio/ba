@@ -35,17 +35,18 @@ A = 0;
 ptNm = numel(phi_WZ);
 ptID = 3;                             % select point for plotting
 zInt = [15 90];         % [zmin zmax]
-nSchritte = 1e2;        % diskrete Schritte in z-Richtung
+zRes = 1e2;             % diskrete Schritte in z-Richtung
+circRes = 1e2;          % anzahl punkte entlang dem Werkstückumfang
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
 StopCriterion = 2*pi;
 % preallocate variables
-z_soll = linspace(zInt(2),zInt(1),nSchritte);
-Bsol  = NaN(1,ptNm,nSchritte);   % Lösungsvektor
-iters = NaN(nSchritte,1);               % Vektor der notwendigen Iterationsschritte
-err   = NaN(nSchritte,1);               % vector of errors
-zSolInd = NaN(nSchritte,1);             % vektor of Indizies der simulierten z Werte
+z_soll = linspace(zInt(2),zInt(1),zRes);
+Bsol  = NaN(1,ptNm,zRes);   % Lösungsvektor
+iters = NaN(zRes,1);               % Vektor der notwendigen Iterationsschritte
+err   = NaN(zRes,1);               % vector of errors
+zSolInd = NaN(zRes,1);             % vektor of Indizies der simulierten z Werte
 % init variables
 n = 1;                                  % absoluter zähler der simulierten Schritte
 B = 0;                                  % Startwert für B
@@ -55,9 +56,17 @@ validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
+% werkstück polygons
+cver = circle(rWst,circRes,[0,0]);      % erzeugen der Vertices der Werkstück-Polygone
+orPgon = polyshape(cver','Simplify',false);              % erzeugen des Originalen Werkstückpolgons
+wkst = repmat(orPgon,zRes,1);
+% werkzeug polygon
+[cWZ(1,:),cWZ(2,:)] = pol2cart(phi_WZ,r_WZ,h_WZ);  % kartesische werkzeug koordinaten
+wz = polyshape(cWZ','Simplify',false);
+clearvars cver cWZ
 
-dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
-setappdata(dH,'canceling',0);
+% dH = waitbar(0,'Running sim...','Name','Running Sim','CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+% setappdata(dH,'canceling',0);
 
 % Definition der Funktion
 bfun = @(B,z_soll,k) k*pi - phi_WZ + asin((z - c - z_soll + B*fZ_WZrad + sin(A)*(y + Y_shift + B*fY_WZrad - h_WZ))./(r_WZ*cos(A)));
@@ -73,7 +82,7 @@ posFunID = @(B,ptID) [x.*cos(ga + B.*f_WSTrad) - b.*sin(ga + B.*f_WSTrad) - a.*c
 % distance of tool point from workpiece centre depending on tool angle
 distWst = @(B,ptID) sqrt((a.*sin(ga + B.*f_WSTrad) - x.*sin(ga + B.*f_WSTrad) - b.*cos(ga + B.*f_WSTrad) - r_WZ(ptID).*cos(phi_WZ(ptID)).*(sin(ga + B.*f_WSTrad).*cos(B) + cos(ga + B.*f_WSTrad).*sin(A).*sin(B)) - B.*fX_WZrad.*sin(ga + B.*f_WSTrad) + r_WZ(ptID).*sin(phi_WZ(ptID)).*(sin(ga + B.*f_WSTrad).*sin(B) - cos(ga + B.*f_WSTrad).*cos(B).*sin(A)) + Y_shift.*cos(ga + B.*f_WSTrad).*cos(A) - h_WZ(ptID).*cos(ga + B.*f_WSTrad).*cos(A) + y.*cos(ga + B.*f_WSTrad).*cos(A) + B.*fY_WZrad.*cos(ga + B.*f_WSTrad).*cos(A)).^2 + (x.*cos(ga + B.*f_WSTrad) - b.*sin(ga + B.*f_WSTrad) - a.*cos(ga + B.*f_WSTrad) + B.*fX_WZrad.*cos(ga + B.*f_WSTrad) + r_WZ(ptID).*cos(phi_WZ(ptID)).*(cos(ga + B.*f_WSTrad).*cos(B) - sin(ga + B.*f_WSTrad).*sin(A).*sin(B)) - r_WZ(ptID).*sin(phi_WZ(ptID)).*(cos(ga + B.*f_WSTrad).*sin(B) + sin(ga + B.*f_WSTrad).*cos(B).*sin(A)) + Y_shift.*sin(ga + B.*f_WSTrad).*cos(A) - h_WZ(ptID).*sin(ga + B.*f_WSTrad).*cos(A) + y.*sin(ga + B.*f_WSTrad).*cos(A) + B.*fY_WZrad.*sin(ga + B.*f_WSTrad).*cos(A)).^2);
 
-pltSim = plotSimulation(zInt,rWst,ptNm,ptID,bfun,tAng2zH,posFun,distWst);
+pltSim = plotSimulation(zInt,rWst,orPgon,wz,ptNm,ptID,bfun,tAng2zH,posFun,distWst);
 %% Schritt N:
 v1T = tic;
 while runSim
@@ -139,6 +148,16 @@ while runSim
         n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
         % plotten des punktes
         pltSim.plotCut(B);
+        % plotten der geometrie
+        
+        % schneiden der polygone
+        for pt = 1:ptNm
+            wzV = posFun(B(pt))';
+            wz.Vertices = wzV(:,1:2);
+            wkst(m) = wkst(m).subtract(wz,'KeepCollinearPoints',true);
+            wkstV = [wkst(m).Vertices,repmat(z_soll(m),wkst(m).numsides,1)];
+            pltSim.toolMvmt(wkstV,wzV);
+        end
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
@@ -160,11 +179,11 @@ while runSim
     if curAngC > StopCriterion
         runSim = false;
     end
-    if getappdata(dH,'canceling')
-        break
-    end
+%     if getappdata(dH,'canceling')
+%         break
+%     end
 end
 
 % Ausgabe
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
-delete(dH);
+% delete(dH);

@@ -5,7 +5,8 @@ classdef plotSimulation
     properties
         figH                    % figure handle
         axH = gobjects(2,1);    % axis handle figure 1
-        ax3dH       % axis handle figure 2 (3d figure)
+        ax3dH                   % axis handle figure 2 (3d figure)
+        cutH                    % axis handle figure polygons
         lTH = gobjects(3,1);    % line handle, trajectory plot
         lRH = gobjects(3,1);    % line handle, radius/distance plot
         limH = gobjects(2,1);   % line hanlde, limits of workpiece extensions
@@ -15,7 +16,9 @@ classdef plotSimulation
         LegStr = {'trajectory','seek points','simulation'};
         zInt
         rWst
-        numPt
+        wkstH       % patch handle, werkstück
+        wzH         % patch handle, werkzeug
+        numPt       % numer of points the tool (wz) has
         ptID        % id of the point of interest within the tool point cloud
         xscope = [0 2*pi];
         scroll = [-6/4*pi 2/4*pi];
@@ -28,7 +31,7 @@ classdef plotSimulation
     end
     
     methods
-        function obj = plotSimulation(zInt,rWst,numPt,ptID,bfun,tAng2zH,posFun,distWst)
+        function obj = plotSimulation(zInt,rWst,wkst,wz,numPt,ptID,bfun,tAng2zH,posFun,distWst)
             %PLOTSIMULATION Construct an instance of this class
             %   Detailed explanation goes here
             obj.zInt = zInt;
@@ -41,11 +44,9 @@ classdef plotSimulation
             obj.posFun = posFun;
             obj.distWst = distWst;
             obj.wkpc = makeLimVert(obj);            % create vertices for the workpiece limit plots
-            obj = initPlotting(obj);
-        end
-        
-        function obj = initPlotting(obj)
-            obj.figH = getFigH(2,'WindowStyle','docked'); % create figure handle and window
+            
+            %% initialising plots and plot handles
+            obj.figH = getFigH(3,'WindowStyle','docked'); % create figure handle and window
             tH = tiledlayout(obj.figH(1),2,1);
             tH.Padding = 'compact';
             tH.TileSpacing = 'compact';
@@ -60,11 +61,14 @@ classdef plotSimulation
             obj.axH(2) = nexttile(tH,2);
             obj.axH(2).Title.String = 'Distance';
             linkaxes(obj.axH,'x')
-%             obj.axH = obj.axH(1);       % only the main axes handle is required
             
             % create 3d axes handles
             obj.ax3dH = axes(obj.figH(2));
             axis(obj.ax3dH, 'vis3d');
+            
+            % create cut plot
+            obj.cutH = axes(obj.figH(3));
+            axis(obj.cutH, 'vis3d');
             axSetup();
             
             % trajectory line handles: analytic traj, seek, solution, workpiece limit
@@ -83,6 +87,7 @@ classdef plotSimulation
             obj.limH(2).UserData.limval = obj.rWst;
             legend(obj.LegStr);
             
+            %% finish
             obj.axH = obj.axH(1);       % only the main axes handle is required
             %% 3d data
             % 3d plotting line handles
@@ -99,6 +104,10 @@ classdef plotSimulation
             end
             v = obj.wkpc.cyl;
             surface(obj.ax3dH,v(1:2,:),v(3:4,:),v(5:6,:),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
+            
+            %% cutting plot / polygons
+            obj.wkstH = patch(obj.cutH,wkst.Vertices(:,1),wkst.Vertices(:,2),zeros(wkst.numsides,1),'FaceColor','#D95319');
+            obj.wzH = patch(obj.cutH,wz.Vertices(:,1),wz.Vertices(:,2),zeros(wz.numsides,1),'FaceColor','#77AC30');
         end
         
         function wkpc = makeLimVert(obj)
@@ -154,6 +163,12 @@ classdef plotSimulation
                 addpoints(obj.l3dH(ln),NaN,NaN,NaN)
             end
         end
+        
+        function toolMvmt(obj,wkstV,wzV)
+            obj.wkstH.Vertices = wkstV;
+            obj.wkstH.Faces = 1:length(wkstV);
+            obj.wzH.Vertices = wzV;
+            drawnow limitrate
+        end
     end
-    
 end
