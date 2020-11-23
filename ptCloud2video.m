@@ -1,6 +1,6 @@
 % create a struct containing al setup parameters
-rd.recfull = true;
-rd.outputv = false;
+rd.recfull = false;
+rd.outputv = true;
 rd.rotation = 'full';
 rd.horizMode = 'spline';
 rd.framerate = 90;
@@ -25,8 +25,8 @@ else
 end
 
 if rd.outputv
-    drawnow();
-    M = repmat(getframe(figH),numel(part),1);  % grab a dummy frame and preallocate RAM with it
+    drawnow
+    M = repmat(getframe(figH),numel(rd.frames),1);  % grab a dummy frame and preallocate RAM with it
 end
 
 % define equation for camera azimuth movement
@@ -83,7 +83,7 @@ if rd.outputv
     end
     
     v = VideoWriter(io.ff);
-    v.FrameRate = framerate;
+    v.FrameRate = rd.framerate;
     
     open(v)
     writeVideo(v,M)         % Write the matrix of data M to the video file.

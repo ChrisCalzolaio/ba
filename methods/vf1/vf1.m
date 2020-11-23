@@ -35,12 +35,12 @@ A = 0;
 ptNm = numel(phi_WZ);
 ptID = 3;                             % select point for plotting
 zInt = [15 90];         % [zmin zmax]
-zRes = 1e2;             % diskrete Schritte in z-Richtung
-circRes = 1e2;          % anzahl punkte entlang dem Werkstückumfang
+zRes = 1e3;             % diskrete Schritte in z-Richtung
+circRes = 1e3;          % anzahl punkte entlang dem Werkstückumfang
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
-StopCriterion = 2*pi;
+StopCriterion = pi/3;
 % preallocate variables
 z_soll = linspace(zInt(2),zInt(1),zRes);
 Bsol  = NaN(1,ptNm,zRes);   % Lösungsvektor
@@ -60,6 +60,10 @@ prevEng = false;                        % war Werkzeug beim vorherigen Iteration
 cver = circle(rWst,circRes,[0,0]);      % erzeugen der Vertices der Werkstück-Polygone
 orPgon = polyshape(cver','Simplify',false);              % erzeugen des Originalen Werkstückpolgons
 wkst = repmat(orPgon,zRes,1);
+% rotate the odd numbered polyshapes by half a rotational space
+oddind = logical(mod(1:zRes,2));
+wkst(oddind) = wkst(oddind).rotate( rad2deg( pi/(circRes) ));
+clearvars oddind
 % werkzeug polygon
 [cWZ(1,:),cWZ(2,:)] = pol2cart(phi_WZ,r_WZ,h_WZ);  % kartesische werkzeug koordinaten
 wz = polyshape(cWZ','Simplify',false);
@@ -156,8 +160,9 @@ while runSim
             wz.Vertices = wzV(:,1:2);
             wkst(m) = wkst(m).subtract(wz,'KeepCollinearPoints',true);
             wkstV = [wkst(m).Vertices,repmat(z_soll(m),wkst(m).numsides,1)];
-            pltSim.toolMvmt(wkstV,wzV);
+%             pltSim.toolMvmt(wkstV,wzV);
         end
+        pltSim.toolMvmt(wkstV,wzV);
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;

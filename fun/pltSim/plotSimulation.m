@@ -65,10 +65,12 @@ classdef plotSimulation
             % create 3d axes handles
             obj.ax3dH = axes(obj.figH(2));
             axis(obj.ax3dH, 'vis3d');
+            obj.ax3dH.View = [140 45];
             
             % create cut plot
             obj.cutH = axes(obj.figH(3));
             axis(obj.cutH, 'vis3d');
+            obj.cutH.XLim = [-50 50];
             axSetup();
             
             % trajectory line handles: analytic traj, seek, solution, workpiece limit
