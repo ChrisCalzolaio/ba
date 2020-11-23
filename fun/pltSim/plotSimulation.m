@@ -28,6 +28,7 @@ classdef plotSimulation
         tAng2zH
         posFun
         distWst
+        timerH              % handle of the timer object
     end
     
     methods
@@ -110,6 +111,14 @@ classdef plotSimulation
             %% cutting plot / polygons
             obj.wkstH = patch(obj.cutH,wkst.Vertices(:,1),wkst.Vertices(:,2),zeros(wkst.numsides,1),'FaceColor','#D95319');
             obj.wzH = patch(obj.cutH,wz.Vertices(:,1),wz.Vertices(:,2),zeros(wz.numsides,1),'FaceColor','#77AC30');
+            
+            %% plot timer object
+            obj.timerH = timer;
+            obj.timerH.StartDelay = 0;
+            obj.timerH.TimerFcn = @(~,~) drawnow;
+            obj.timerH.Period = 0.5;
+            obj.timerH.ExecutionMode = 'fixedRate';
+            obj.timerH.start;
         end
         
         function wkpc = makeLimVert(obj)
@@ -155,7 +164,7 @@ classdef plotSimulation
                 limval = obj.limH(n).UserData.limval;
                 addpoints(obj.limH(n),obj.axH.XLim,[limval limval]);
             end
-            drawnow limitrate
+%             drawnow limitrate
         end
         
         function finishedCut(obj,B)
@@ -170,7 +179,11 @@ classdef plotSimulation
             obj.wkstH.Vertices = wkstV;
             obj.wkstH.Faces = 1:length(wkstV);
             obj.wzH.Vertices = wzV;
-            drawnow limitrate
+%             drawnow limitrate
+        end
+        
+        function stop(obj)
+            obj.timerH.stop;
         end
     end
 end
