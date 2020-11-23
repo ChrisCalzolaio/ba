@@ -187,3 +187,5 @@ end
 % Ausgabe
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
 % delete(dH);
+
+vert = extractVert(wkst,z_soll);
