@@ -33,20 +33,21 @@ A = 0;
 
 %% Simulations-Setup
 ptNm = numel(phi_WZ);
-ptID = 3;                             % select point for plotting
-zInt = [15 90];         % [zmin zmax]
-zRes = 1e3;             % diskrete Schritte in z-Richtung
-circRes = 1e3;          % anzahl punkte entlang dem Werkstückumfang
+ptID = 3;                                   % select point for plotting
+zInt = [60 90];                             % [zmin zmax]
+zRes = 5;                                   % [Ebenen/mm] Auflösung in z-Richtung
+nDisE = ceil(zRes * abs(diff(zInt)));    % Anzahl diskrete Ebenen in z-Richtung, nach oben gerundet, damit geforderte Auflösung auf jeden Fall eingehalten wird
+nDisC = ceil(pi * rWst * sqrt(3) * zRes);   % Anzahl Vertices entlang dem Werkstückumfangs (kreis), nach oben gerundet, ...
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
-StopCriterion = pi/3;
+StopCriterion = 2*pi;
 % preallocate variables
-z_soll = linspace(zInt(2),zInt(1),zRes);
-Bsol  = NaN(1,ptNm,zRes);   % Lösungsvektor
-iters = NaN(zRes,1);               % Vektor der notwendigen Iterationsschritte
-err   = NaN(zRes,1);               % vector of errors
-zSolInd = NaN(zRes,1);             % vektor of Indizies der simulierten z Werte
+z_soll = linspace(zInt(2),zInt(1),nDisE);
+Bsol  = NaN(1,ptNm,nDisE);   % Lösungsvektor
+iters = NaN(nDisE,1);               % Vektor der notwendigen Iterationsschritte
+err   = NaN(nDisE,1);               % vector of errors
+zSolInd = NaN(nDisE,1);             % vektor of Indizies der simulierten z Werte
 % init variables
 n = 1;                                  % absoluter zähler der simulierten Schritte
 B = 0;                                  % Startwert für B
@@ -57,12 +58,12 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % werkstück polygons
-cver = circle(rWst,circRes,[0,0]);      % erzeugen der Vertices der Werkstück-Polygone
+cver = circle(rWst,nDisC,[0,0]);      % erzeugen der Vertices der Werkstück-Polygone
 orPgon = polyshape(cver','Simplify',false);              % erzeugen des Originalen Werkstückpolgons
-wkst = repmat(orPgon,zRes,1);
+wkst = repmat(orPgon,nDisE,1);
 % rotate the odd numbered polyshapes by half a rotational space
-oddind = logical(mod(1:zRes,2));
-wkst(oddind) = wkst(oddind).rotate( rad2deg( pi/(circRes) ));
+oddind = logical(mod(1:nDisE,2));
+wkst(oddind) = wkst(oddind).rotate( rad2deg( pi/(nDisC) ));
 clearvars oddind
 % werkzeug polygon
 [cWZ(1,:),cWZ(2,:)] = pol2cart(phi_WZ,r_WZ,h_WZ);  % kartesische werkzeug koordinaten
