@@ -41,7 +41,7 @@ nDisC = ceil(pi * rWst * sqrt(3) * zRes);   % Anzahl Vertices entlang dem Werkst
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
-StopCriterion = 2*pi;
+StopCriterion = pi/3;
 % preallocate variables
 z_soll = linspace(zInt(2),zInt(1),nDisE);
 Bsol  = NaN(1,ptNm,nDisE);   % Lösungsvektor
@@ -58,9 +58,10 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % werkstück polygons
-cver = circle(rWst,nDisC,[0,0]);      % erzeugen der Vertices der Werkstück-Polygone
-orPgon = polyshape(cver','Simplify',false);              % erzeugen des Originalen Werkstückpolgons
-wkst = repmat(orPgon,nDisE,1);
+cver = circle(rWst,nDisC,[0,0]);            % Vertices der Werkstück-Polygone
+orPgon = polyshape(cver','Simplify',false);	% originales Werkstückpolgons
+wkst = repmat(orPgon,nDisE,1);              % Array der Werkstückpolygone
+sIDLuT = repmat({ones(nDisC,1)},nDisE,1);   % cell-array der vertex classification
 % rotate the odd numbered polyshapes by half a rotational space
 oddind = logical(mod(1:nDisE,2));
 wkst(oddind) = wkst(oddind).rotate( rad2deg( pi/(nDisC) ));
@@ -159,9 +160,11 @@ while runSim
         for pt = 1:ptNm
             wzV = posFun(B(pt))';
             wz.Vertices = wzV(:,1:2);
-            wkst(m) = wkst(m).subtract(wz,'KeepCollinearPoints',true);
+            [wkst(m),sID,vID] = wkst(m).subtract(wz,'KeepCollinearPoints',true);
             wkstV = [wkst(m).Vertices,repmat(z_soll(m),wkst(m).numsides,1)];
 %             pltSim.toolMvmt(wkstV,wzV);
+            sID(sID == 1) = sIDLuT{m}(vID(sID == 1));       % manipulation der aktuellen klassifizierung
+            sIDLuT{m} = sID;
         end
         pltSim.toolMvmt(wkstV,wzV);
         % Ergebnisse wegschreiben
@@ -195,4 +198,5 @@ pltSim.stop;
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
 % delete(dH);
 
-vert = extractVert(wkst,z_soll);
+vert = extractVert(wkst,z_soll);    % extract vertices into single Mx3 array
+sIDLuT = vertcat(sIDLuT{:});        % extract vertex classes into single Mx1 array
