@@ -13,7 +13,7 @@ axSetup;
 
 % 1.Schnitt vorbereiten
 poly1 = polyshape([0 0 1 1],[1 0 0 1],'KeepCollinearPoints',true);
-sIDo = ones(4,1);                       % originale Vertex Klassi.: alle gehören Poly1
+sIDLuT = ones(4,1);                       % originale Vertex Klassi.: alle gehören Poly1
 poly2 = translate(poly1,[0.25 0.75]);
 
 for cut = 1:3
@@ -30,10 +30,9 @@ for cut = 1:3
     % geschnittener Zustand plotten
     patch(axH(2*cut),'XData',vo(1,:),'YData',vo(2,:),'FaceColor','#4DBEEE','FaceAlpha',0.25,'EdgeColor','none');
     sIDHo = text(axH(2*cut),vo(1,:),vo(2,:),num2str(sID),'Color','#A2142F','HorizontalAlignment','right');          % ausgegebene Klassifizierung
-    sIDoLuT = sIDo;                         % look up table: klassifizierung des letzten schrittes speichern
-    sIDo = sID;                             % kopieren der aktuellen klassifizierung
-    sIDo(sID ==1) = sIDoLuT(vID(sID == 1));	% manipulation der aktuellen klassifizierung
-    sIDHn = text(axH(2*cut),vo(1,:),vo(2,:),num2str(sIDo),'Color','#77AC30');
+    sID(sID ==1) = sIDLuT(vID(sID == 1));	% manipulation der aktuellen klassifizierung
+    sIDHn = text(axH(2*cut),vo(1,:),vo(2,:),num2str(sID),'Color','#77AC30');
+    sIDLuT = sID;                         % look up table: klassifizierung für den nächsten Schritt speichern
     % nächsten Schnitt vorbereiten
     poly2 = poly2.translate([0.25 -0.25]);
 end
