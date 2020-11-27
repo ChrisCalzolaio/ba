@@ -1,6 +1,6 @@
 % create a struct containing al setup parameters
 rd.recfull = false;
-rd.outputv = true;
+rd.outputv = false;
 rd.rotation = 'full';
 rd.horizMode = 'spline';
 rd.framerate = 90;

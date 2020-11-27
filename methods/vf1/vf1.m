@@ -33,20 +33,21 @@ A = 0;
 
 %% Simulations-Setup
 ptNm = numel(phi_WZ);
-ptID = 3;                             % select point for plotting
-zInt = [15 90];         % [zmin zmax]
-zRes = 1e3;             % diskrete Schritte in z-Richtung
-circRes = 1e3;          % anzahl punkte entlang dem Werkstückumfang
+ptID = 3;                                   % select point for plotting
+zInt = [60 90];                             % [zmin zmax]
+zRes = 5;                                   % [Ebenen/mm] Auflösung in z-Richtung
+nDisE = ceil(zRes * abs(diff(zInt)));    % Anzahl diskrete Ebenen in z-Richtung, nach oben gerundet, damit geforderte Auflösung auf jeden Fall eingehalten wird
+nDisC = ceil(pi * rWst * sqrt(3) * zRes);   % Anzahl Vertices entlang dem Werkstückumfangs (kreis), nach oben gerundet, ...
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
 StopCriterion = pi/3;
 % preallocate variables
-z_soll = linspace(zInt(2),zInt(1),zRes);
-Bsol  = NaN(1,ptNm,zRes);   % Lösungsvektor
-iters = NaN(zRes,1);               % Vektor der notwendigen Iterationsschritte
-err   = NaN(zRes,1);               % vector of errors
-zSolInd = NaN(zRes,1);             % vektor of Indizies der simulierten z Werte
+z_soll = linspace(zInt(2),zInt(1),nDisE);
+Bsol  = NaN(1,ptNm,nDisE);   % Lösungsvektor
+iters = NaN(nDisE,1);               % Vektor der notwendigen Iterationsschritte
+err   = NaN(nDisE,1);               % vector of errors
+zSolInd = NaN(nDisE,1);             % vektor of Indizies der simulierten z Werte
 % init variables
 n = 1;                                  % absoluter zähler der simulierten Schritte
 B = 0;                                  % Startwert für B
@@ -57,12 +58,13 @@ engaged = false;                        % Werkzeug im Eingriff
 runSim = true;                          % soll simulation ausgeührt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % werkstück polygons
-cver = circle(rWst,circRes,[0,0]);      % erzeugen der Vertices der Werkstück-Polygone
-orPgon = polyshape(cver','Simplify',false);              % erzeugen des Originalen Werkstückpolgons
-wkst = repmat(orPgon,zRes,1);
+cver = circle(rWst,nDisC,[0,0]);            % Vertices der Werkstück-Polygone
+orPgon = polyshape(cver','Simplify',false);	% originales Werkstückpolgons
+wkst = repmat(orPgon,nDisE,1);              % Array der Werkstückpolygone
+sIDLuT = repmat({ones(nDisC,1)},nDisE,1);   % cell-array der vertex classification
 % rotate the odd numbered polyshapes by half a rotational space
-oddind = logical(mod(1:zRes,2));
-wkst(oddind) = wkst(oddind).rotate( rad2deg( pi/(circRes) ));
+oddind = logical(mod(1:nDisE,2));
+wkst(oddind) = wkst(oddind).rotate( rad2deg( pi/(nDisC) ));
 clearvars oddind
 % werkzeug polygon
 [cWZ(1,:),cWZ(2,:)] = pol2cart(phi_WZ,r_WZ,h_WZ);  % kartesische werkzeug koordinaten
@@ -158,9 +160,11 @@ while runSim
         for pt = 1:ptNm
             wzV = posFun(B(pt))';
             wz.Vertices = wzV(:,1:2);
-            wkst(m) = wkst(m).subtract(wz,'KeepCollinearPoints',true);
+            [wkst(m),sID,vID] = wkst(m).subtract(wz,'KeepCollinearPoints',true);
             wkstV = [wkst(m).Vertices,repmat(z_soll(m),wkst(m).numsides,1)];
 %             pltSim.toolMvmt(wkstV,wzV);
+            sID(sID == 1) = sIDLuT{m}(vID(sID == 1));       % manipulation der aktuellen klassifizierung
+            sIDLuT{m} = sID;
         end
         pltSim.toolMvmt(wkstV,wzV);
         % Ergebnisse wegschreiben
@@ -194,4 +198,5 @@ pltSim.stop;
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
 % delete(dH);
 
-vert = extractVert(wkst,z_soll);
+vert = extractVert(wkst,z_soll);    % extract vertices into single Mx3 array
+sIDLuT = vertcat(sIDLuT{:});        % extract vertex classes into single Mx1 array
