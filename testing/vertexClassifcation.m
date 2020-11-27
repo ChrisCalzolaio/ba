@@ -34,5 +34,9 @@ for cut = 1:3
     sIDHn = text(axH(2*cut),vo(1,:),vo(2,:),num2str(sID),'Color','#77AC30');
     sIDLuT = sID;                         % look up table: klassifizierung für den nächsten Schritt speichern
     % nächsten Schnitt vorbereiten
-    poly2 = poly2.translate([0.25 -0.25]);
+    if cut < 2
+        poly2 = poly2.translate([0.25 -0.25]);
+    else
+        poly2 = poly2.translate([0 -0.25]);
+    end
 end
