@@ -1,7 +1,8 @@
+clearvars; clf;
 [figH] = getFigH(1);
-tH = tiledlayout(figH,2,2);
+tH = tiledlayout(figH,3,2);
 axH = gobjects(4,1);
-for tl = 1:4
+for tl = 1:6
     axH(tl) = nexttile(tH,tl);
 end
 linkaxes(axH)
@@ -12,28 +13,27 @@ axSetup;
 
 % 1.Schnitt vorbereiten
 poly1 = polyshape([0 0 1 1],[1 0 0 1],'KeepCollinearPoints',true);
-v1 = poly1.Vertices';
-patch(axH(1),'XData',v1(1,:),'YData',v1(2,:),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
-poly2 = translate(poly1,[0.5 0.5]);
-v2 = poly2.Vertices';
-patch(axH(1),'XData',v2(1,:),'YData',v2(2,:),'FaceColor','#EDB120','FaceAlpha',0.25,'EdgeColor','none');
-% 1. schnitt
-[polyout,sID,vID] = poly1.subtract(poly2);
-resMat = [polyout.Vertices,sID,vID];
-vo = polyout.Vertices';
-patch(axH(2),'XData',vo(1,:),'YData',vo(2,:),'FaceColor','#4DBEEE','FaceAlpha',0.25,'EdgeColor','none');
-sIDH = text(axH(2),vo(1,:),vo(2,:),num2str(sID));
-% 2.Schnitt vorbereiten
-poly22 = poly2.translate([0.1 -0.25]);
-v22 = poly22.Vertices';
-patch(axH(3),'XData',v22(1,:),'YData',v22(2,:),'FaceColor','#EDB120','FaceAlpha',0.25,'EdgeColor','none');
-patch(axH(3),'XData',vo(1,:),'YData',vo(2,:),'FaceColor','#4DBEEE','FaceAlpha',0.25,'EdgeColor','none');
-% 2. Schnitt
-[polyout2,sID2,vID2] = polyout.subtract(poly22);
-resMat2 = [polyout2.Vertices,sID2,vID2];
-vo2 = polyout2.Vertices';
-patch(axH(4),'XData',vo2(1,:),'YData',vo2(2,:),'FaceColor','#4DBEEE','FaceAlpha',0.25,'EdgeColor','none');
+sIDo = ones(4,1);                       % originale Vertex Klassi.: alle gehören Poly1
+poly2 = translate(poly1,[0.25 0.75]);
 
-sID2t(sID2 ==1) = sID(vID2(sID2 ==1));
-
-sIDH2 = text(axH(4),vo2(1,:),vo2(2,:),num2str(sID2t));
+for cut = 1:3
+    % ausgangszustand plotten
+    v1 = poly1.Vertices';
+    patch(axH(2*cut-1),'XData',v1(1,:),'YData',v1(2,:),'FaceColor','#D95319','FaceAlpha',0.25,'EdgeColor','none');
+    text(axH(2*cut-1),v1(1,:),v1(2,:),num2str((1:poly1.numsides)'));
+    v2 = poly2.Vertices';
+    patch(axH(2*cut-1),'XData',v2(1,:),'YData',v2(2,:),'FaceColor','#EDB120','FaceAlpha',0.25,'EdgeColor','none');
+    % schneiden
+    [poly1,sID,vID] = poly1.subtract(poly2);
+    resMat = [poly1.Vertices,sID,vID];
+    vo = poly1.Vertices';
+    % geschnittener Zustand plotten
+    patch(axH(2*cut),'XData',vo(1,:),'YData',vo(2,:),'FaceColor','#4DBEEE','FaceAlpha',0.25,'EdgeColor','none');
+    sIDHo = text(axH(2*cut),vo(1,:),vo(2,:),num2str(sID),'Color','#A2142F','HorizontalAlignment','right');          % ausgegebene Klassifizierung
+    sIDoLuT = sIDo;                         % look up table: klassifizierung des letzten schrittes speichern
+    sIDo = sID;                             % kopieren der aktuellen klassifizierung
+    sIDo(sID ==1) = sIDoLuT(vID(sID == 1));	% manipulation der aktuellen klassifizierung
+    sIDHn = text(axH(2*cut),vo(1,:),vo(2,:),num2str(sIDo),'Color','#77AC30');
+    % nächsten Schnitt vorbereiten
+    poly2 = poly2.translate([0.25 -0.25]);
+end
