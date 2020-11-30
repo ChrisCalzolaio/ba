@@ -3,4 +3,4 @@ cCL = [[0 0 1];...   blue: intersection
        [1 0 1]];   % magenta: tool
    
 
-pcshow(vert,cCL(sIDLuT+1,:));
+pcH = pcshow(vert,cCL(sIDLuT+1,:));
