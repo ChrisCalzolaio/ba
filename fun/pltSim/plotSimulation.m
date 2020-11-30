@@ -4,9 +4,10 @@ classdef plotSimulation
     
     properties
         figH                    % figure handle
-        axH = gobjects(2,1);    % axis handle figure 1
-        ax3dH                   % axis handle figure 2 (3d figure)
-        cutH                    % axis handle figure polygons
+        axH = gobjects(2,1);    % axis handle, fig 1: traj and dist plot
+        ax3dH                   % axis handle, fig 2: 3d figure: seek and cut points
+        cutH                    % axis handle, fig 3: current polygons and cut operation
+        pcP                     % axis handle, fig 4: point cloud player
         lTH = gobjects(3,1);    % line handle, trajectory plot
         lRH = gobjects(3,1);    % line handle, radius/distance plot
         limH = gobjects(2,1);   % line hanlde, limits of workpiece extensions
@@ -47,7 +48,7 @@ classdef plotSimulation
             obj.wkpc = makeLimVert(obj);            % create vertices for the workpiece limit plots
             
             %% initialising plots and plot handles
-            obj.figH = getFigH(3,'WindowStyle','docked'); % create figure handle and window
+            obj.figH = getFigH(4,'WindowStyle','docked'); % create figure handle and window
             tH = tiledlayout(obj.figH(1),2,1);
             tH.Padding = 'compact';
             tH.TileSpacing = 'compact';
@@ -72,6 +73,7 @@ classdef plotSimulation
             obj.cutH = axes(obj.figH(3));
             axis(obj.cutH, 'vis3d');
             obj.cutH.XLim = [-50 50];
+            obj.cutH.YLim = obj.cutH.XLim;
             axSetup();
             
             % trajectory line handles: analytic traj, seek, solution, workpiece limit
@@ -112,6 +114,10 @@ classdef plotSimulation
             obj.wkstH = patch(obj.cutH,wkst.Vertices(:,1),wkst.Vertices(:,2),zeros(wkst.numsides,1),'FaceColor','#D95319');
             obj.wzH = patch(obj.cutH,wz.Vertices(:,1),wz.Vertices(:,2),zeros(wz.numsides,1),'FaceColor','#77AC30');
             
+            %% point cloud player
+            set(0,'CurrentFigure',obj.figH(4));
+            obj.pcP = pcplayer(obj.cutH.XLim,obj.cutH.XLim,obj.zInt);
+            
             %% plot timer object
             obj.timerH = timer;
             obj.timerH.StartDelay = 0;
@@ -138,6 +144,8 @@ classdef plotSimulation
         end
                 
         function plotTraj(obj,B)
+            % calculates the trajectory of the selected point (ptID) in the
+            % current interval
             bvec = linspace(B,B+2*pi,1e2);
             addpoints(obj.lTH(1),bvec,obj.tAng2zH(bvec,obj.ptID));
             addpoints(obj.lRH(1),bvec,obj.distWst(bvec,obj.ptID));
@@ -149,6 +157,8 @@ classdef plotSimulation
         end
         
         function plotCut(obj,B)
+            % plots position of select point (ptID) into the z-height
+            % (trajectory) and distances plots (created by plotTraj)
             addpoints(obj.lTH(3),B(obj.ptID), obj.tAng2zH(B(obj.ptID),obj.ptID));
             addpoints(obj.lRH(3),B(obj.ptID), obj.distWst(B(obj.ptID),obj.ptID));
             obj.scrollPlot(B(obj.ptID));
@@ -159,12 +169,13 @@ classdef plotSimulation
         end
         
         function scrollPlot(obj,x)
+            % calculates current values of x axis limits and moves any
+            % fixed elemnts in the trajectory plots forwards
             obj.axH.XLim = max([obj.xscope; x+obj.scroll]);
             for n = 1:numel(obj.limH)
                 limval = obj.limH(n).UserData.limval;
                 addpoints(obj.limH(n),obj.axH.XLim,[limval limval]);
             end
-%             drawnow limitrate
         end
         
         function finishedCut(obj,B)
@@ -180,6 +191,12 @@ classdef plotSimulation
             obj.wkstH.Faces = 1:length(wkstV);
             obj.wzH.Vertices = wzV;
 %             drawnow limitrate
+        end
+        
+        function pointCloud(obj,vert)
+           pc = pointCloud(vert);
+           view(obj.pcP,pc);
+           
         end
         
         function stop(obj)

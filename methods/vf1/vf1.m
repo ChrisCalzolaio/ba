@@ -162,11 +162,11 @@ while runSim
             wz.Vertices = wzV(:,1:2);
             [wkst(m),sID,vID] = wkst(m).subtract(wz,'KeepCollinearPoints',true);
             wkstV = [wkst(m).Vertices,repmat(z_soll(m),wkst(m).numsides,1)];
-%             pltSim.toolMvmt(wkstV,wzV);
             sID(sID == 1) = sIDLuT{m}(vID(sID == 1));       % manipulation der aktuellen klassifizierung
             sIDLuT{m} = sID;
         end
         pltSim.toolMvmt(wkstV,wzV);
+        pltSim.pointCloud(extractVert(wkst,z_soll));
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
