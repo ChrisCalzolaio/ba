@@ -1,6 +1,7 @@
 % create a struct containing al setup parameters
+clearvars -except ptCloud
 rd.recfull = false;
-rd.outputv = false;
+rd.outputv = true;
 rd.rotation = 'full';
 rd.horizMode = 'spline';
 rd.framerate = 90;
@@ -26,7 +27,7 @@ end
 
 if rd.outputv
     drawnow
-    M = repmat(getframe(figH),numel(rd.frames),1);  % grab a dummy frame and preallocate RAM with it
+    M = repmat(getframe(figH),rd.frames,1);  % grab a dummy frame and preallocate RAM with it
 end
 
 % define equation for camera azimuth movement
@@ -56,16 +57,19 @@ for frame=1:rd.frames
     view(az+(frame-1)*(rd.angle/rd.frames),el - 20*elevang(frame));
     
     if rd.outputv
-        M(frame) = getframe(figH);                                          % grab the frame
+        M(frame) = getframe(figH);
     else
         drawnow();
     end
     
-    fprintf(1,'[ %s ] plotting frame %i @ Camera [Azimuth %.1f | Elevation %.1f] took %.3f sec\n',....
+    if logical(~mod(frame,10))
+    fprintf(1,'[ %s ] frame %i took %.3f sec. elapsed: %.1f sec. est duration: %.1f sec.\n',....
                     datestr(now,'HH:mm:SS'),...
                     frame,...
-                    axH.View,...
-                    toc(frametime));
+                    toc(frametime),...
+                    toc(overalltime),...
+                    toc(overalltime)/frame*rd.frames);
+    end
 end
 fprintf(1,'[ %s ] finished plotting, took %.3f secs.\n',datestr(now,'HH:mm:SS'),toc(overalltime))
 clearvars frame overalltime az el frametime elevang
