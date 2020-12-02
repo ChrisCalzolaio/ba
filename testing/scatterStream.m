@@ -2,14 +2,14 @@
 runflag = true;
 n = 0;
 
-[dx,dy,dz] = sepMat(rand(1,3,'single'));
-scH = scatter3(axH,dx,dy,dz);
+d = rand(1,3,'single');
+scH = scatter3(axH,d(:,1),d(:,2),d(:,3));
 scH.Marker = '.';
 
-scH.XDataSource = 'dx';
-scH.YDataSource = 'dy';
-scH.ZDataSource = 'dz';
-scH.CDataSource = 'dz';
+scH.XDataSource = 'd(:,1)';
+scH.YDataSource = 'd(:,2)';
+scH.ZDataSource = 'd(:,3)';
+scH.CDataSource = 'd(:,3)';
 
 % tExH = @(~,~,v1,v2) tExecFun(v1,v2);
 tH = timer;
@@ -25,7 +25,7 @@ tH.start;
 
 tic
 for n=1:1e3
-     [dx,dy,dz] = sepMat( rand(1000,3,'single'));
+     d = rand(1000,3,'single');
      tH.UserData.n = n;
 %      pause(0.01)
 %      refreshdata(axH);
@@ -48,10 +48,4 @@ if n>100
     src.UserData.n = 0;
 end
 
-end
-
-function [vx,vy,vz] = sepMat(M)
-    vx = M(:,1);
-    vy = M(:,2);
-    vz = M(:,3);
 end
