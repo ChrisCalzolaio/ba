@@ -7,11 +7,12 @@ classdef plotSimulation
         axH = gobjects(2,1);    % axis handle, fig 1: traj and dist plot
         ax3dH                   % axis handle, fig 2: 3d figure: seek and cut points
         cutH                    % axis handle, fig 3: current polygons and cut operation
-        pcP                     % axis handle, fig 4: point cloud player
+        pcH                     % axis handle, fig 4: point cloud player
         lTH = gobjects(3,1);    % line handle, trajectory plot
         lRH = gobjects(3,1);    % line handle, radius/distance plot
         limH = gobjects(2,1);   % line hanlde, limits of workpiece extensions
         l3dH                    % line handle, 3d plot, trajectories of tool points
+        scH                     % scatter handle, point cloud
         l3dHs       % line handle, 3d plot, seek points
         l3dHc       % line handle, 3d plot, candidate points
         LegStr = {'trajectory','seek points','simulation'};
@@ -31,11 +32,17 @@ classdef plotSimulation
         distWst
         timerH              % handle of the timer object
     end
+    properties (SetAccess = private)
+        runtime             % runtime of plotting
+    end
     
     methods
         function obj = plotSimulation(zInt,rWst,wkst,wz,numPt,ptID,bfun,tAng2zH,posFun,distWst)
             %PLOTSIMULATION Construct an instance of this class
             %   Detailed explanation goes here
+            
+            obj.runtime = tic;
+            % write input information into object
             obj.zInt = zInt;
             obj.rWst = rWst;
             obj.numPt = numPt;
@@ -115,15 +122,23 @@ classdef plotSimulation
             obj.wzH = patch(obj.cutH,wz.Vertices(:,1),wz.Vertices(:,2),zeros(wz.numsides,1),'FaceColor','#77AC30');
             
             %% point cloud player
-            set(0,'CurrentFigure',obj.figH(4));
-            obj.pcP = pcplayer(obj.cutH.XLim,obj.cutH.XLim,obj.zInt);
+            obj.pcH = axes(obj.figH(4));
+            % init empty scatter object
+            d = rand(1,3,'single');
+            obj.scH = scatter3(obj.pcH,d(:,1),d(:,2),d(:,3));
+            obj.scH.Marker = '.';
+            obj.scH.XDataSource = 'v(:,1)'; % v: vertice data
+            obj.scH.YDataSource = 'v(:,2)';
+            obj.scH.ZDataSource = 'v(:,3)';
+            obj.scH.CDataSource = 'c';      % c: color data
             
             %% plot timer object
             obj.timerH = timer;
             obj.timerH.StartDelay = 0;
             obj.timerH.TimerFcn = @(~,~) drawnow;
             obj.timerH.Period = 0.5;
-            obj.timerH.ExecutionMode = 'fixedRate';
+            obj.timerH.ExecutionMode = 'fixedSpacing';
+            obj.timerH.BusyMode = 'drop';
             obj.timerH.start;
         end
         
@@ -193,14 +208,17 @@ classdef plotSimulation
 %             drawnow limitrate
         end
         
-        function pointCloud(obj,vert)
-           pc = pointCloud(vert);
-           view(obj.pcP,pc);
-           
+        function pointCloud(obj,v,c)
+            % v: vertice data
+            % c: color data
+            refreshdata(obj.scH,'caller');
         end
         
         function stop(obj)
             obj.timerH.stop;
+            fprintf('timer excts: %i.\n',obj.timerH.TasksExecuted);
+            fprintf('fps: %.1f.\n',obj.timerH.TasksExecuted/toc(obj.runtime));
+            fprintf('avg period: %.3f\n',obj.timerH.AveragePeriod);
         end
     end
 end

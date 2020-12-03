@@ -166,7 +166,7 @@ while runSim
             sIDLuT{m} = sID;
         end
         pltSim.toolMvmt(wkstV,wzV);
-        pltSim.pointCloud(extractVert(wkst,z_soll));
+        pltSim.pointCloud(extractVert(wkst,z_soll),vertcat(sIDLuT{:}));
         % Ergebnisse wegschreiben
         Bsol(1,:,n) = B;
         zSolInd(n) = m;
@@ -198,5 +198,5 @@ pltSim.stop;
 fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
 % delete(dH);
 
-vert = extractVert(wkst,z_soll);    % extract vertices into single Mx3 array
-sIDLuT = vertcat(sIDLuT{:});        % extract vertex classes into single Mx1 array
+vert = extractVert(wkst,z_soll);        % extract vertices into single Mx3 array
+sIDLuT = single(vertcat(sIDLuT{:}));    % extract vertex classes into single Mx1 array
