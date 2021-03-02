@@ -36,7 +36,7 @@ A = 0;          % winkel A in rad
 nB = 1;         % [1*s^-1], drehzahl der b-achse
 slopeB = nB;    % drehgechwindigkeit, eigentlich die Ableitung
 %% stop simulation
-stopCrit = 'angB';
+stopCrit = 'angC';
 
 cStop = 2*pi;                               % simulation beenden wenn werkstück eine volle umdrehung gemacht
 bStop = 2*pi;
@@ -76,7 +76,7 @@ end
 % Simulation
 simulinkT = tic;
 simOut = sim('ASM00021');
-fprintf('[ %s ] time to run the vectorized code: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
+fprintf('[ %s ] time to run the simulation: %.3f sec.\n',datestr(now,'HH:mm:ss'),toc(simulinkT))
 %% Daten extrahieren
 anaR = table();         % ergebnisse der simulation in analytischer Zeit
 simR = table();         % ergebnisse der simulation in simulations zeit
