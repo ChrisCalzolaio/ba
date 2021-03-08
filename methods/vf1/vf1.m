@@ -4,7 +4,7 @@ clearvars
 m=3;                % Modul
 al_n= 20;           % Eingriffswinkel
 z_WST= 24;          % Zähnezahl
-rWst = (m*z_WST)/2; % Werkstückradius
+rWst = (m*z_WST)/2; % Werkstückradius (Teilkreis)
 d_WZ= 40;           % Werkzeugdurchmesser
 rWz = d_WZ/2;       % Werkzeugradius
 z_WZ= 1;            % Werkzeug Zähnezahl
@@ -14,7 +14,7 @@ h_a0f= 1.17;
 [phi_WZ,r_WZ,h_WZ] = WZ(d_WZ, m, al_n, h_a0f, h_f0f, z_WZ);
 % Maschine
 
-x = rWst + rWz;
+x = rWst + rWz;     % Achsabstand des Schneckengetriebs
 fX_WZrad=0;
 
 fY_WZrad = 0;
