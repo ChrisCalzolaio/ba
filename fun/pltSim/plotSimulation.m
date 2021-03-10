@@ -65,7 +65,7 @@ classdef plotSimulation
             %% Simulation Data
             % create simulation axes handles
             obj.axH(1) = nexttile(tH,1);
-            obj.axH(1).Title.String = 'Trajectory';
+            obj.axH(1).Title.String = 'Height';
             obj.axH(1).XTickLabel = [];
             obj.axH(2) = nexttile(tH,2);
             obj.axH(2).Title.String = 'Distance';

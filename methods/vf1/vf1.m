@@ -92,7 +92,7 @@ pltSim = plotSimulation(zInt,rWst,orPgon,wz,ptNm,ptID,bfun,tAng2zH,posFun,distWs
 %% Schritt N:
 v1T = tic;
 while runSim
-    % plot trajectory
+    % detect start configuration
     pltSim.plotTraj(B);
     while not(engaged) % Seek-Loop
         B = B + dB;
@@ -100,7 +100,7 @@ while runSim
         pltSim.plotSeek(B);
     end
     
-    while true
+    while true      % detect starting plane in workpiece
         B0 = B;                     % Ausgangswinkel der Iteration ist der Winkel des letzten Schrittes
         B  =  bfun(B0,z_soll(m),k);	% Berechnen des Winkels mit Startwert
         engaged = checkEng(posFun(B),zInt,rWst);
