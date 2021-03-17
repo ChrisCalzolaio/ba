@@ -85,6 +85,7 @@ classdef plotSimulation
             
             % trajectory line handles: analytic traj, seek, solution, workpiece limit
             obj.lTH(1) = animatedline(obj.axH(1),'Color','#EDB120');
+            obj.lTH(1).UserData.maxB = 0;
             obj.lTH(2) = animatedline(obj.axH(1), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
             obj.lTH(3) = animatedline(obj.axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
             obj.limH(1) = animatedline(obj.axH(1), 'LineStyle','--','Color','r','MaximumNumPoints',2); % upper workpiece limit
@@ -161,7 +162,9 @@ classdef plotSimulation
         function plotTraj(obj,B)
             % calculates the trajectory of the selected point (ptID) in the
             % current interval
-            bvec = linspace(B,B+2*pi,1e2);
+            maxB = B+2*pi;
+            bvec = linspace(min(obj.lTH(1).UserData.maxB,B),maxB,1e2);
+            obj.lTH(1).UserData.maxB = maxB;        % save the upper bounds of plotted area
             addpoints(obj.lTH(1),bvec,obj.tAng2zH(bvec,obj.ptID));
             addpoints(obj.lRH(1),bvec,obj.distWst(bvec,obj.ptID));
         end

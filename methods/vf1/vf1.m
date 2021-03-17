@@ -51,7 +51,9 @@ zSolInd = NaN(nDisE,1);             % vektor of Indizies der simulierten z Werte
 % init variables
 n = 1;                                  % absoluter zähler der simulierten Schritte
 B = 0;                                  % Startwert für B
+jumpB = 2.5/2*pi;                         % Sprungweite nach Schnitt
 m = 1;                                  % index für z_soll
+mS = 1;                                 % Sicherheitsabstand für Lösungsstart ab der zweiten Umdrehung
 k = 1;                                  % Vorfaktor zum Verschieben der Lösung um bereits zurück gelegten Winkel des Werkzeugs
 validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
@@ -177,8 +179,8 @@ while runSim
     end
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
-    B = B + pi;             % wir können um eine halbe Umdrehung springen
-    m = prevm;              % wieder bei der letzten obersten Ebene beginnen
+    B = B + jumpB;             % wir können um eine halbe Umdrehung springen
+    m = prevm - mS;              % wieder bei der letzten obersten Ebene beginnen
     k = k+2;
     pltSim.finishedCut(B);
     
