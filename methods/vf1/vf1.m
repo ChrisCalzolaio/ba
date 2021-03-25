@@ -41,7 +41,7 @@ nDisC = ceil(pi * rWst * sqrt(3) * zRes);   % Anzahl Vertices entlang dem Werkst
 iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
-StopCriterion = pi/3;
+StopCriterion = 2*pi;
 % preallocate variables
 z_soll = linspace(zInt(2),zInt(1),nDisE);
 Bsol  = NaN(1,ptNm,nDisE);   % Lösungsvektor

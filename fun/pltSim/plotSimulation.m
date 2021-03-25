@@ -90,14 +90,16 @@ classdef plotSimulation
             obj.lTH(3) = animatedline(obj.axH(1), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
             obj.limH(1) = animatedline(obj.axH(1), 'LineStyle','--','Color','r','MaximumNumPoints',2); % upper workpiece limit
             obj.limH(1).UserData.limval = obj.zInt(2);
+            obj.limH(2) = animatedline(obj.axH(1), 'LineStyle','--','Color','r','MaximumNumPoints',2); % lower workpiece limit
+            obj.limH(2).UserData.limval = obj.zInt(1);
             legend(obj.LegStr);
             
             % radius from centre axis line handles: analytic rad, seek, solution, workpiece limit
             obj.lRH(1) = animatedline(obj.axH(2),'Color','#EDB120');
             obj.lRH(2) = animatedline(obj.axH(2), 'LineStyle','none','Marker','*','Color','#77AC30'); % seek
             obj.lRH(3) = animatedline(obj.axH(2), 'LineStyle','-',   'Marker','.','Color','#A2142F'); % engaged traj
-            obj.limH(2) = animatedline(obj.axH(2), 'LineStyle','--','Color','r','MaximumNumPoints',2); % outer workpiece limit
-            obj.limH(2).UserData.limval = obj.rWst;
+            obj.limH(3) = animatedline(obj.axH(2), 'LineStyle','--','Color','r','MaximumNumPoints',2); % outer workpiece limit
+            obj.limH(3).UserData.limval = obj.rWst;
             legend(obj.LegStr);
             
             %% finish
