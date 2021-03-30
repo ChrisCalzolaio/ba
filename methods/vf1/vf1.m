@@ -3,12 +3,12 @@ clearvars
 % Werkzeug
 m=3;                % Modul
 al_n= 20;           % Eingriffswinkel
-z_WST= 24;          % Zähnezahl
-rWst = (m*z_WST)/2; % Werkstückradius (Teilkreis)
+z_WST= 24;          % Zaehnezahl
+rWst = (m*z_WST)/2; % Werkstueckradius (Teilkreis)
 d_WZ= 40;           % Werkzeugdurchmesser
 rWz = d_WZ/2;       % Werkzeugradius
-z_WZ= 1;            % Werkzeug Zähnezahl
-h_f0f =1.4;         % Werkzeug Kopf- und Fußhöhe
+z_WZ= 1;            % Werkzeug Zaehnezahl
+h_f0f =1.4;         % Werkzeug Kopf- und Fusshoehe
 h_a0f= 1.17;
 % Erzeugung der Werkzeugpunkte
 [phi_WZ,r_WZ,h_WZ] = WZ(d_WZ, m, al_n, h_a0f, h_f0f, z_WZ);
@@ -35,34 +35,34 @@ A = 0;
 ptNm = numel(phi_WZ);
 ptID = 3;                                   % select point for plotting
 zInt = [60 90];                             % [zmin zmax]
-zRes = 5;                                   % [Ebenen/mm] Auflösung in z-Richtung
-nDisE = ceil(zRes * abs(diff(zInt)));    % Anzahl diskrete Ebenen in z-Richtung, nach oben gerundet, damit geforderte Auflösung auf jeden Fall eingehalten wird
-nDisC = ceil(pi * rWst * sqrt(3) * zRes);   % Anzahl Vertices entlang dem Werkstückumfangs (kreis), nach oben gerundet, ...
-iterAbbr = 1e-3;        % zulässiger Fehler bei der Iteration
+zRes = 5;                                   % [Ebenen/mm] Aufloesung in z-Richtung
+nDisE = ceil(zRes * abs(diff(zInt)));    % Anzahl diskrete Ebenen in z-Richtung, nach oben gerundet, damit geforderte Aufloesung auf jeden Fall eingehalten wird
+nDisC = ceil(pi * rWst * sqrt(3) * zRes);   % Anzahl Vertices entlang dem Werkstueckumfangs (kreis), nach oben gerundet, ...
+iterAbbr = 1e-3;        % zulaessiger Fehler bei der Iteration
 dB = 0.1*pi;            % schrittweite beim seeken
 logStr = {'no', 'yes'}; % logical string for log outputs
 StopCriterion = 2*pi;
 % preallocate variables
 z_soll = linspace(zInt(2),zInt(1),nDisE);
-Bsol  = NaN(1,ptNm,nDisE);   % Lösungsvektor
+Bsol  = NaN(1,ptNm,nDisE);   % Loesungsvektor
 iters = NaN(nDisE,1);               % Vektor der notwendigen Iterationsschritte
 err   = NaN(nDisE,1);               % vector of errors
 zSolInd = NaN(nDisE,1);             % vektor of Indizies der simulierten z Werte
 % init variables
-n = 1;                                  % absoluter zähler der simulierten Schritte
-B = 0;                                  % Startwert für B
+n = 1;                                  % absoluter zaehler der simulierten Schritte
+B = 0;                                  % Startwert fuer B
 jumpB = 2.5/2*pi;                         % Sprungweite nach Schnitt
-m = 1;                                  % index für z_soll
-mS = 1;                                 % Sicherheitsabstand für Lösungsstart ab der zweiten Umdrehung
-k = 1;                                  % Vorfaktor zum Verschieben der Lösung um bereits zurück gelegten Winkel des Werkzeugs
+m = 1;                                  % index fuer z_soll
+mS = 1;                                 % Sicherheitsabstand fuer Loesungsstart ab der zweiten Umdrehung
+k = 1;                                  % Vorfaktor zum Verschieben der Loesung um bereits zurueck gelegten Winkel des Werkzeugs
 validIter = true;
 engaged = false;                        % Werkzeug im Eingriff
-runSim = true;                          % soll simulation ausgeührt werden
+runSim = true;                          % soll simulation ausgeuehrt werden
 prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
-% werkstück polygons
-cver = circle(rWst,nDisC,[0,0]);            % Vertices der Werkstück-Polygone
-orPgon = polyshape(cver','Simplify',false);	% originales Werkstückpolgons
-wkst = repmat(orPgon,nDisE,1);              % Array der Werkstückpolygone
+% werkstueck polygons
+cver = circle(rWst,nDisC,[0,0]);            % Vertices der Werkstueck-Polygone
+orPgon = polyshape(cver','Simplify',false);	% originales Werkstueckpolgons
+wkst = repmat(orPgon,nDisE,1);              % Array der Werkstueckpolygone
 sIDLuT = repmat({ones(nDisC,1)},nDisE,1);   % cell-array der vertex classification
 % rotate the odd numbered polyshapes by half a rotational space
 oddind = logical(mod(1:nDisE,2));
@@ -129,7 +129,7 @@ while runSim
             % Hardstop: gesuchter Wert z_soll tiefer als erreichbar
             if ~isreal(B)
                 validIter = false;
-                B = B0;                 % letzter berechneter Wert ist der gültige Endwinkel
+                B = B0;                 % letzter berechneter Wert ist der gueltige Endwinkel
                 warning('Gesuchter Punkt zu tief.')
             end
             
@@ -145,15 +145,15 @@ while runSim
 
         if not(validIter)
             validIter = true;       % reset flag
-            engaged = false;        % durch erreichen eines ungültigen Iterationszustandes sind wir auch nicht mehr im Eingriff
+            engaged = false;        % durch erreichen eines ungueltigen Iterationszustandes sind wir auch nicht mehr im Eingriff
             break
         end
-        % prüfen, ob wir noch im Eingriff sind
+        % pruefen, ob wir noch im Eingriff sind
         engaged = checkEng(posFun(B),zInt,rWst);
         if not(engaged)
             break
         end
-        n = n+1;                    % ein weiterer, gültiger Schritt wurde simuliert
+        n = n+1;                    % ein weiterer, gueltiger Schritt wurde simuliert
         % plotten des punktes
         pltSim.plotCut(B);
         % plotten der geometrie
@@ -179,7 +179,7 @@ while runSim
     end
     % Schnitt ist beendet
     B = max(B);             % nur der Winkel des zuletzt im Eingriff gewesenen Punktes behalten
-    B = B + jumpB;             % wir können um eine halbe Umdrehung springen
+    B = B + jumpB;             % wir koennen um eine halbe Umdrehung springen
     m = prevm - mS;              % wieder bei der letzten obersten Ebene beginnen
     k = k+2;
     pltSim.finishedCut(B);
@@ -197,7 +197,7 @@ end
 
 pltSim.stop;
 % Ausgabe
-fprintf('Dauer Lösung durch Iteration: %.4f sec.\n',toc(v1T))
+fprintf('Dauer Loesung durch Iteration: %.4f sec.\n',toc(v1T))
 % delete(dH);
 
 vert = extractVert(wkst,z_soll);        % extract vertices into single Mx3 array

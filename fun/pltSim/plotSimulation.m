@@ -18,7 +18,7 @@ classdef plotSimulation
         LegStr = {'trajectory','seek points','simulation'};
         zInt
         rWst
-        wkstH       % patch handle, werkstück
+        wkstH       % patch handle, werkstueck
         wzH         % patch handle, werkzeug
         numPt       % numer of points the tool (wz) has
         ptID        % id of the point of interest within the tool point cloud
