@@ -49,16 +49,16 @@ iters = NaN(nDisE,1);               % Vektor der notwendigen Iterationsschritte
 err   = NaN(nDisE,1);               % vector of errors
 zSolInd = NaN(nDisE,1);             % vektor of Indizies der simulierten z Werte
 % init variables
-n = 1;                                  % absoluter zaehler der simulierten Schritte
-B = 0;                                  % Startwert fuer B
-jumpB = 2.5/2*pi;                         % Sprungweite nach Schnitt
-m = 1;                                  % index fuer z_soll
-mS = 1;                                 % Sicherheitsabstand fuer Loesungsstart ab der zweiten Umdrehung
-k = 1;                                  % Vorfaktor zum Verschieben der Loesung um bereits zurueck gelegten Winkel des Werkzeugs
+n = 1;                              % absoluter zaehler der simulierten Schritte
+B = 0;                              % Startwert fuer B
+jumpB = 2.5/2*pi;                   % Sprungweite nach Schnitt
+m = 1;                              % index fuer z_soll
+mS = 1;                             % Sicherheitsabstand fuer Loesungsstart ab der zweiten Umdrehung
+k = 1;                              % Vorfaktor zum Verschieben der Loesung um bereits zurueck gelegten Winkel des Werkzeugs
 validIter = true;
-engaged = false;                        % Werkzeug im Eingriff
-runSim = true;                          % soll simulation ausgeuehrt werden
-prevEng = false;                        % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
+engaged = false;                    % Werkzeug im Eingriff
+runSim = true;                      % soll simulation ausgeuehrt werden
+prevEng = false;                    % war Werkzeug beim vorherigen Iterationsschritt im Eingriff
 % werkstueck polygons
 cver = circle(rWst,nDisC,[0,0]);            % Vertices der Werkstueck-Polygone
 orPgon = polyshape(cver','Simplify',false);	% originales Werkstueckpolgons
